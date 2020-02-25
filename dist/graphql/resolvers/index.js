@@ -30,36 +30,52 @@ var __awaiter =
       step((generator = generator.apply(thisArg, _arguments || [])).next())
     })
   }
-var __importDefault =
-  (this && this.__importDefault) ||
-  function(mod) {
-    return mod && mod.__esModule ? mod : { default: mod }
-  }
 Object.defineProperty(exports, '__esModule', { value: true })
-const User_1 = require('../../models/User')
-const Specialty_1 = require('../../models/Specialty')
-const Professional_1 = require('../../models/Professional')
-const bcrypt_1 = __importDefault(require('bcrypt'))
+// import { User, UserEntity, UserIn } from '../../models/User'
+const professional_model_1 = require('../../professional/professional.model')
+const specialty_model_1 = require('../../specialty/specialty.model')
+// import bcrypt from 'bcrypt'
 const specialties = specialtyIds =>
   __awaiter(void 0, void 0, void 0, function*() {
     try {
-      const specialties = yield Specialty_1.Specialty.find({ _id: { $in: specialtyIds } })
+      const specialties = yield specialty_model_1.SpecialtyModel.find({
+        _id: { $in: specialtyIds }
+      })
       return specialties.map(specialty => {
         return {
           _id: specialty._id,
           name: specialty.name,
-          // eslint-disable-next-line @typescript-eslint/no-use-before-define
           professionals: professionals.bind(this, specialty.professionals)
         }
       })
-    } catch (e) {
-      throw new Error(`Something goes wrong ${e}`)
+    } catch (err) {
+      throw new Error(`Something goes wrong ${err}`)
+    }
+  })
+const assignSpecialties = professional =>
+  __awaiter(void 0, void 0, void 0, function*() {
+    try {
+      yield specialty_model_1.SpecialtyModel.find(
+        {
+          _id: { $in: professional.specialties }
+        },
+        (err, doc) =>
+          __awaiter(void 0, void 0, void 0, function*() {
+            if (err) throw new Error(`Something goes wrong ${err}`)
+            yield specialty_model_1.SpecialtyModel.findOneAndUpdate(
+              { _id: doc },
+              { $push: { professionals: professional } }
+            )
+          })
+      )
+    } catch (err) {
+      throw new Error(`Something goes wrong ${err}`)
     }
   })
 const professionals = professionalIds =>
   __awaiter(void 0, void 0, void 0, function*() {
     try {
-      const professionals = yield Professional_1.Professional.find({
+      const professionals = yield professional_model_1.ProfessionalModel.find({
         _id: { $in: professionalIds }
       })
       return professionals.map(professional => {
@@ -70,35 +86,59 @@ const professionals = professionalIds =>
           specialties: specialties.bind(this, professional.specialties)
         }
       })
-    } catch (e) {
-      throw new Error(`Something goes wrong ${e}`)
+    } catch (err) {
+      throw new Error(`Something goes wrong ${err}`)
     }
   })
 exports.default = {
-  Users() {
+  Professionals() {
     return __awaiter(this, void 0, void 0, function*() {
       try {
-        return yield User_1.User.find()
+        const professionals = yield professional_model_1.ProfessionalModel.find()
+        return professionals.map(professional => {
+          return {
+            _id: professional._id,
+            firstName: professional.firstName,
+            lastName: professional.lastName,
+            specialties: specialties.bind(this, professional.specialties)
+          }
+        })
       } catch (err) {
         throw new Error(`Something goes wrong ${err}`)
       }
     })
   },
-  createUser({ userInput }) {
+  // async Users(): Promise<UserIn[] | undefined> {
+  //   try {
+  //     return await User.find()
+  //   } catch (err) {
+  //     throw new Error(`Something goes wrong ${err}`)
+  //   }
+  // }
+  // async createUser({ userInput }: { userInput: UserEntity }): Promise<UserIn> {
+  //   try {
+  //     const user = await User.findOne({ email: userInput.email })
+  //     if (user) {
+  //       throw new Error('User exists already.')
+  //     }
+  //     const hashedPassword = await bcrypt.hash(userInput.password, 12)
+  //     const newUser = new User({
+  //       email: userInput.email,
+  //       password: hashedPassword
+  //     })
+  //     await newUser.save()
+  //     const { _id, email } = newUser
+  //     return { _id, email, password: null }
+  //   } catch (err) {
+  //     throw new Error(`Something goes wrong ${err}`)
+  //   }
+  // },
+  deleteProfessional(_id) {
     return __awaiter(this, void 0, void 0, function*() {
       try {
-        const user = yield User_1.User.findOne({ email: userInput.email })
-        if (user) {
-          throw new Error('User exists already.')
-        }
-        const hashedPassword = yield bcrypt_1.default.hash(userInput.password, 12)
-        const newUser = new User_1.User({
-          email: userInput.email,
-          password: hashedPassword
+        return yield professional_model_1.ProfessionalModel.findOneAndRemove({ _id }, err => {
+          if (err) throw new Error(`Something goes wrong ${err}`)
         })
-        yield newUser.save()
-        const { _id, email } = newUser
-        return { _id, email, password: null }
       } catch (err) {
         throw new Error(`Something goes wrong ${err}`)
       }
@@ -107,33 +147,28 @@ exports.default = {
   createProfessional({ professionalInput }) {
     return __awaiter(this, void 0, void 0, function*() {
       try {
-        const newProfessional = new Professional_1.Professional({
+        const newProfessional = new professional_model_1.ProfessionalModel({
           firstName: professionalInput.firstName,
           lastName: professionalInput.lastName,
-          specialties: '5e5491969ae6c8344f0bb4be'
+          specialties: professionalInput.specialties
         })
         yield newProfessional.save()
-        const specialty = yield Specialty_1.Specialty.findById('5e5491969ae6c8344f0bb4be')
-        if (!specialty) {
-          throw new Error('Specialty not found.')
-        }
-        specialty.professionals.push(newProfessional)
-        yield specialty.save()
+        assignSpecialties(newProfessional)
         return {
           _id: newProfessional._id,
           firstName: newProfessional.firstName,
           lastName: newProfessional.lastName,
           specialties: specialties.bind(this, newProfessional.specialties)
         }
-      } catch (e) {
-        throw new Error(`Something goes wrong ${e}`)
+      } catch (err) {
+        throw new Error(`Something goes wrong ${err}`)
       }
     })
   },
   createSpecialty({ specialtyInput }) {
     return __awaiter(this, void 0, void 0, function*() {
       try {
-        const newSpecialty = new Specialty_1.Specialty({
+        const newSpecialty = new specialty_model_1.SpecialtyModel({
           name: specialtyInput.name
         })
         yield newSpecialty.save()
@@ -141,8 +176,8 @@ exports.default = {
           _id: newSpecialty._id,
           name: newSpecialty.name
         }
-      } catch (e) {
-        throw new Error(`Something goes wrong ${e}`)
+      } catch (err) {
+        throw new Error(`Something goes wrong ${err}`)
       }
     })
   }

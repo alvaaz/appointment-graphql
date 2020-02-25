@@ -12,5 +12,14 @@
   "rules": {
     // Aca puedes modificar alguna regla específica, por ejemplo:
     // "@typescript-eslint/explicit-function-return-type": "off",
+    "no-use-before-define": "off",
+    "@typescript-eslint/no-use-before-define": [
+      "error",
+      {
+        "variables": false,
+        "functions": false,
+        "typedefs": false
+      }
+    ]
   }
 }

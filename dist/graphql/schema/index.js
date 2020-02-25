@@ -33,6 +33,7 @@ exports.default = graphql_1.buildSchema(`
   input ProfessionalInput {
     firstName: String!
     lastName: String!
+    specialties: [String]
   }
 
   type RootQuery {
@@ -45,6 +46,7 @@ exports.default = graphql_1.buildSchema(`
     createUser(userInput: UserInput): User
     createProfessional(professionalInput: ProfessionalInput): Professional
     createSpecialty(specialtyInput: SpecialtyInput): Specialty
+    deleteProfessional(_id: String!): Professional
   }
 
   schema {

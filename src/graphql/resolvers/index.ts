@@ -1,28 +1,48 @@
-import { User, UserEntity, UserIn } from '../../models/User'
-import { Specialty, SpecialtyEntity, SpecialtyIn } from '../../models/Specialty'
-import { Professional, ProfessionalEntity, ProfessionalIn } from '../../models/Professional'
+// import { User, UserEntity, UserIn } from '../../models/User'
+import { ProfessionalModel } from '../../professional/professional.model'
+import { Professional } from '../../professional/professional.interface'
+import { SpecialtyModel } from '../../specialty/specialty.model'
+import { Specialty } from '../../specialty/specialty.interface'
 
-import bcrypt from 'bcrypt'
+// import bcrypt from 'bcrypt'
 
-const specialties = async (specialtyIds: string): Promise<SpecialtyIn[]> => {
+const specialties = async (specialtyIds: string): Promise<Specialty[]> => {
   try {
-    const specialties = await Specialty.find({ _id: { $in: specialtyIds } })
+    const specialties = await SpecialtyModel.find({ _id: { $in: specialtyIds } })
     return specialties.map(specialty => {
       return {
         _id: specialty._id,
         name: specialty.name,
-        // eslint-disable-next-line @typescript-eslint/no-use-before-define
         professionals: professionals.bind(this, specialty.professionals)
       }
     })
-  } catch (e) {
-    throw new Error(`Something goes wrong ${e}`)
+  } catch (err) {
+    throw new Error(`Something goes wrong ${err}`)
   }
 }
 
-const professionals = async (professionalIds: string): Promise<ProfessionalIn[]> => {
+const assignSpecialties = async (professional: Professional): Promise<void> => {
   try {
-    const professionals = await Professional.find({
+    await SpecialtyModel.find(
+      {
+        _id: { $in: professional.specialties }
+      },
+      async (err, doc) => {
+        if (err) throw new Error(`Something goes wrong ${err}`)
+        await SpecialtyModel.findOneAndUpdate(
+          { _id: doc },
+          { $push: { professionals: professional } }
+        )
+      }
+    )
+  } catch (err) {
+    throw new Error(`Something goes wrong ${err}`)
+  }
+}
+
+const professionals = async (professionalIds: string): Promise<Professional[]> => {
+  try {
+    const professionals = await ProfessionalModel.find({
       _id: { $in: professionalIds }
     })
     return professionals.map(professional => {
@@ -33,33 +53,57 @@ const professionals = async (professionalIds: string): Promise<ProfessionalIn[]>
         specialties: specialties.bind(this, professional.specialties)
       }
     })
-  } catch (e) {
-    throw new Error(`Something goes wrong ${e}`)
+  } catch (err) {
+    throw new Error(`Something goes wrong ${err}`)
   }
 }
 
 export default {
-  async Users(): Promise<UserIn[] | undefined> {
+  async Professionals(): Promise<Professional[] | undefined> {
     try {
-      return await User.find()
+      const professionals = await ProfessionalModel.find()
+      return professionals.map(professional => {
+        return {
+          _id: professional._id,
+          firstName: professional.firstName,
+          lastName: professional.lastName,
+          specialties: specialties.bind(this, professional.specialties)
+        }
+      })
     } catch (err) {
       throw new Error(`Something goes wrong ${err}`)
     }
   },
-  async createUser({ userInput }: { userInput: UserEntity }): Promise<UserIn> {
+  // async Users(): Promise<UserIn[] | undefined> {
+  //   try {
+  //     return await User.find()
+  //   } catch (err) {
+  //     throw new Error(`Something goes wrong ${err}`)
+  //   }
+  // }
+  // async createUser({ userInput }: { userInput: UserEntity }): Promise<UserIn> {
+  //   try {
+  //     const user = await User.findOne({ email: userInput.email })
+  //     if (user) {
+  //       throw new Error('User exists already.')
+  //     }
+  //     const hashedPassword = await bcrypt.hash(userInput.password, 12)
+  //     const newUser = new User({
+  //       email: userInput.email,
+  //       password: hashedPassword
+  //     })
+  //     await newUser.save()
+  //     const { _id, email } = newUser
+  //     return { _id, email, password: null }
+  //   } catch (err) {
+  //     throw new Error(`Something goes wrong ${err}`)
+  //   }
+  // },
+  async deleteProfessional(_id: string): Promise<Professional> {
     try {
-      const user = await User.findOne({ email: userInput.email })
-      if (user) {
-        throw new Error('User exists already.')
-      }
-      const hashedPassword = await bcrypt.hash(userInput.password, 12)
-      const newUser = new User({
-        email: userInput.email,
-        password: hashedPassword
+      return await ProfessionalModel.findOneAndRemove({ _id }, err => {
+        if (err) throw new Error(`Something goes wrong ${err}`)
       })
-      await newUser.save()
-      const { _id, email } = newUser
-      return { _id, email, password: null }
     } catch (err) {
       throw new Error(`Something goes wrong ${err}`)
     }
@@ -67,38 +111,32 @@ export default {
   async createProfessional({
     professionalInput
   }: {
-    professionalInput: ProfessionalEntity
-  }): Promise<ProfessionalIn> {
+    professionalInput: Professional
+  }): Promise<Professional> {
     try {
-      const newProfessional = new Professional({
+      const newProfessional = new ProfessionalModel({
         firstName: professionalInput.firstName,
         lastName: professionalInput.lastName,
-        specialties: '5e5491969ae6c8344f0bb4be'
+        specialties: professionalInput.specialties
       })
+
       await newProfessional.save()
-      const specialty = await Specialty.findById('5e5491969ae6c8344f0bb4be')
-      if (!specialty) {
-        throw new Error('Specialty not found.')
-      }
-      specialty.professionals.push(newProfessional)
-      await specialty.save()
+
+      assignSpecialties(newProfessional)
+
       return {
         _id: newProfessional._id,
         firstName: newProfessional.firstName,
         lastName: newProfessional.lastName,
         specialties: specialties.bind(this, newProfessional.specialties)
       }
-    } catch (e) {
-      throw new Error(`Something goes wrong ${e}`)
+    } catch (err) {
+      throw new Error(`Something goes wrong ${err}`)
     }
   },
-  async createSpecialty({
-    specialtyInput
-  }: {
-    specialtyInput: SpecialtyEntity
-  }): Promise<SpecialtyIn> {
+  async createSpecialty({ specialtyInput }: { specialtyInput: Specialty }): Promise<Specialty> {
     try {
-      const newSpecialty = new Specialty({
+      const newSpecialty = new SpecialtyModel({
         name: specialtyInput.name
       })
       await newSpecialty.save()
@@ -106,8 +144,8 @@ export default {
         _id: newSpecialty._id,
         name: newSpecialty.name
       }
-    } catch (e) {
-      throw new Error(`Something goes wrong ${e}`)
+    } catch (err) {
+      throw new Error(`Something goes wrong ${err}`)
     }
   }
 }
