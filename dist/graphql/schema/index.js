@@ -1,6 +1,7 @@
-import { buildSchema } from 'graphql'
-
-export default buildSchema(`
+'use strict'
+Object.defineProperty(exports, '__esModule', { value: true })
+const graphql_1 = require('graphql')
+exports.default = graphql_1.buildSchema(`
   type User {
     _id: ID
     email: String
@@ -51,3 +52,4 @@ export default buildSchema(`
     mutation: RootMutation
   }
 `)
+//# sourceMappingURL=index.js.map
