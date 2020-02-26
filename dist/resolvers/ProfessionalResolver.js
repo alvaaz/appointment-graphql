@@ -24,6 +24,13 @@ var __metadata =
     if (typeof Reflect === 'object' && typeof Reflect.metadata === 'function')
       return Reflect.metadata(k, v)
   }
+var __param =
+  (this && this.__param) ||
+  function(paramIndex, decorator) {
+    return function(target, key) {
+      decorator(target, key, paramIndex)
+    }
+  }
 var __awaiter =
   (this && this.__awaiter) ||
   function(thisArg, _arguments, P, generator) {
@@ -55,59 +62,47 @@ var __awaiter =
       step((generator = generator.apply(thisArg, _arguments || [])).next())
     })
   }
-var __importDefault =
-  (this && this.__importDefault) ||
-  function(mod) {
-    return mod && mod.__esModule ? mod : { default: mod }
-  }
 Object.defineProperty(exports, '__esModule', { value: true })
-const express_1 = __importDefault(require('express'))
-const body_parser_1 = __importDefault(require('body-parser'))
-const express_graphql_1 = __importDefault(require('express-graphql'))
-const database_1 = require('./database')
-require('reflect-metadata')
 const type_graphql_1 = require('type-graphql')
-const ProfessionalResolver_1 = require('./resolvers/ProfessionalResolver')
-let HelloResolver = class HelloResolver {
+const Professional_1 = require('../entities/Professional')
+let ProfessionalInput = class ProfessionalInput {}
+__decorate(
+  [type_graphql_1.Field(), __metadata('design:type', String)],
+  ProfessionalInput.prototype,
+  'firstName',
+  void 0
+)
+__decorate(
+  [type_graphql_1.Field(), __metadata('design:type', String)],
+  ProfessionalInput.prototype,
+  'lastname',
+  void 0
+)
+ProfessionalInput = __decorate([type_graphql_1.InputType()], ProfessionalInput)
+let ProfessionalResolver = class ProfessionalResolver {
   // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
-  hello() {
+  createProfessional(options) {
     return __awaiter(this, void 0, void 0, function*() {
-      return 'hello world'
+      const newProfessional = yield new Professional_1.ProfessionalModel(options).save()
+      return newProfessional
     })
   }
 }
 __decorate(
   [
-    type_graphql_1.Query(() => String, { name: 'helloWorld' }),
+    type_graphql_1.Mutation(() => Professional_1.Professional),
+    __param(
+      0,
+      type_graphql_1.Arg('options', () => ProfessionalInput)
+    ),
     __metadata('design:type', Function),
-    __metadata('design:paramtypes', []),
+    __metadata('design:paramtypes', [ProfessionalInput]),
     __metadata('design:returntype', Promise)
   ],
-  HelloResolver.prototype,
-  'hello',
+  ProfessionalResolver.prototype,
+  'createProfessional',
   null
 )
-HelloResolver = __decorate([type_graphql_1.Resolver()], HelloResolver)
-// import graphQlSchema from './graphql/schema'
-// import graphQlResolvers from './graphql/resolvers'
-const main = () =>
-  __awaiter(void 0, void 0, void 0, function*() {
-    const app = express_1.default()
-    app.use(body_parser_1.default.json())
-    app.use(
-      '/graphql',
-      express_graphql_1.default({
-        graphiql: true,
-        schema: yield type_graphql_1.buildSchema({
-          resolvers: [HelloResolver, ProfessionalResolver_1.ProfessionalResolver]
-        }),
-        context: {
-          messageId: 'test'
-        }
-      })
-    )
-    database_1.connect()
-    app.listen(3000, () => console.log('Server on port 3000'))
-  })
-main()
-//# sourceMappingURL=app.js.map
+ProfessionalResolver = __decorate([type_graphql_1.Resolver()], ProfessionalResolver)
+exports.ProfessionalResolver = ProfessionalResolver
+//# sourceMappingURL=ProfessionalResolver.js.map
