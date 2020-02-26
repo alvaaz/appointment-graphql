@@ -47,6 +47,7 @@ exports.default = graphql_1.buildSchema(`
     createProfessional(professionalInput: ProfessionalInput): Professional
     createSpecialty(specialtyInput: SpecialtyInput): Specialty
     deleteProfessional(_id: String!): Professional
+    assignSpecialties(_id: String! specialties: [String]): Professional
   }
 
   schema {

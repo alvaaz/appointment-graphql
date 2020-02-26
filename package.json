@@ -8,7 +8,9 @@
     "express": "^4.17.1",
     "express-graphql": "^0.9.0",
     "graphql": "^14.6.0",
-    "mongoose": "^5.9.2"
+    "mongoose": "^5.9.2",
+    "reflect-metadata": "^0.1.13",
+    "type-graphql": "^0.17.6"
   },
   "scripts": {
     "start": "yarn build && yarn watch-node",
