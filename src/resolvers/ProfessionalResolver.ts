@@ -1,25 +1,17 @@
-import { Resolver, Mutation, Arg, InputType, Field } from 'type-graphql'
+import { Resolver, Mutation, Arg } from 'type-graphql'
 import { Professional, ProfessionalModel } from '../entities/Professional'
-
-@InputType()
-class ProfessionalInput implements Partial<Professional> {
-  @Field()
-  firstName: string
-
-  @Field()
-  lastName: string
-}
+import { ProfessionalInput } from './types/ProfessionalInput'
 
 @Resolver()
 export class ProfessionalResolver {
   @Mutation(() => Professional)
-  async createProfessional(
-    @Arg('options', () => ProfessionalInput) options: ProfessionalInput
-  ): Promise<Professional> {
-    const professional = new ProfessionalModel({
-      ...options
-    } as Professional)
+  async createProfessional(@Arg('options') options: ProfessionalInput): Promise<Professional> {
+    try {
+      const professional = new ProfessionalModel(options as Professional)
 
-    return await professional.save()
+      return await professional.save()
+    } catch (err) {
+      console.log('Erroooooor', err)
+    }
   }
 }

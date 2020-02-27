@@ -65,37 +65,25 @@ var __awaiter =
 Object.defineProperty(exports, '__esModule', { value: true })
 const type_graphql_1 = require('type-graphql')
 const Professional_1 = require('../entities/Professional')
-let ProfessionalInput = class ProfessionalInput {}
-__decorate(
-  [type_graphql_1.Field(), __metadata('design:type', String)],
-  ProfessionalInput.prototype,
-  'firstName',
-  void 0
-)
-__decorate(
-  [type_graphql_1.Field(), __metadata('design:type', String)],
-  ProfessionalInput.prototype,
-  'lastName',
-  void 0
-)
-ProfessionalInput = __decorate([type_graphql_1.InputType()], ProfessionalInput)
+const ProfessionalInput_1 = require('./types/ProfessionalInput')
 let ProfessionalResolver = class ProfessionalResolver {
   createProfessional(options) {
     return __awaiter(this, void 0, void 0, function*() {
-      const professional = new Professional_1.ProfessionalModel(Object.assign({}, options))
-      return yield professional.save()
+      try {
+        const professional = new Professional_1.ProfessionalModel(options)
+        return yield professional.save()
+      } catch (err) {
+        console.log('Erroooooor', err)
+      }
     })
   }
 }
 __decorate(
   [
     type_graphql_1.Mutation(() => Professional_1.Professional),
-    __param(
-      0,
-      type_graphql_1.Arg('options', () => ProfessionalInput)
-    ),
+    __param(0, type_graphql_1.Arg('options')),
     __metadata('design:type', Function),
-    __metadata('design:paramtypes', [ProfessionalInput]),
+    __metadata('design:paramtypes', [ProfessionalInput_1.ProfessionalInput]),
     __metadata('design:returntype', Promise)
   ],
   ProfessionalResolver.prototype,

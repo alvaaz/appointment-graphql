@@ -1,6 +1,4 @@
 'use strict'
-// import { Document, Schema, model } from 'mongoose'
-// import { Professional } from './professional.interface'
 var __decorate =
   (this && this.__decorate) ||
   function(decorators, target, key, desc) {
@@ -27,10 +25,10 @@ var __metadata =
       return Reflect.metadata(k, v)
   }
 Object.defineProperty(exports, '__esModule', { value: true })
-const typegoose_1 = require('typegoose')
+const typegoose_1 = require('@typegoose/typegoose')
 const mongodb_1 = require('mongodb')
 const type_graphql_1 = require('type-graphql')
-let Professional = class Professional extends typegoose_1.Typegoose {}
+let Professional = class Professional {}
 __decorate(
   [type_graphql_1.Field(), __metadata('design:type', mongodb_1.ObjectId)],
   Professional.prototype,
@@ -51,5 +49,5 @@ __decorate(
 )
 Professional = __decorate([type_graphql_1.ObjectType()], Professional)
 exports.Professional = Professional
-exports.ProfessionalModel = new Professional().getModelForClass(Professional)
+exports.ProfessionalModel = typegoose_1.getModelForClass(Professional)
 //# sourceMappingURL=Professional.js.map

@@ -1,10 +1,11 @@
-import { connect } from './database'
-import { ObjectId } from 'mongodb'
-import { ObjectIdScalar } from './object-id.scalar'
-import 'reflect-metadata'
 import { buildSchema } from 'type-graphql'
-import { ProfessionalResolver } from './resolvers/ProfessionalResolver'
+import 'reflect-metadata'
 import { ApolloServer } from 'apollo-server'
+import { ObjectId } from 'mongodb'
+
+import { connect } from './database'
+import { ObjectIdScalar } from './object-id.scalar'
+import { ProfessionalResolver } from './resolvers/ProfessionalResolver'
 
 const bootstrap = async (): Promise<void> => {
   try {

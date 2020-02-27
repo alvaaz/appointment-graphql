@@ -1,12 +1,9 @@
-// import { Document, Schema, model } from 'mongoose'
-// import { Professional } from './professional.interface'
-
-import { prop as Property, Typegoose } from 'typegoose'
+import { prop as Property, getModelForClass } from '@typegoose/typegoose'
 import { ObjectId } from 'mongodb'
 import { Field, ObjectType } from 'type-graphql'
 
 @ObjectType()
-export class Professional extends Typegoose {
+export class Professional {
   @Field()
   readonly _id: ObjectId
 
@@ -19,4 +16,4 @@ export class Professional extends Typegoose {
   lastName: string
 }
 
-export const ProfessionalModel = new Professional().getModelForClass(Professional)
+export const ProfessionalModel = getModelForClass(Professional)

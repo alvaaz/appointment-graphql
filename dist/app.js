@@ -31,13 +31,13 @@ var __awaiter =
     })
   }
 Object.defineProperty(exports, '__esModule', { value: true })
-const database_1 = require('./database')
-const mongodb_1 = require('mongodb')
-const object_id_scalar_1 = require('./object-id.scalar')
-require('reflect-metadata')
 const type_graphql_1 = require('type-graphql')
-const ProfessionalResolver_1 = require('./resolvers/ProfessionalResolver')
+require('reflect-metadata')
 const apollo_server_1 = require('apollo-server')
+const mongodb_1 = require('mongodb')
+const database_1 = require('./database')
+const object_id_scalar_1 = require('./object-id.scalar')
+const ProfessionalResolver_1 = require('./resolvers/ProfessionalResolver')
 const bootstrap = () =>
   __awaiter(void 0, void 0, void 0, function*() {
     try {
