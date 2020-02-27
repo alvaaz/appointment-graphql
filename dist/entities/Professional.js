@@ -28,8 +28,15 @@ var __metadata =
   }
 Object.defineProperty(exports, '__esModule', { value: true })
 const typegoose_1 = require('typegoose')
+const mongodb_1 = require('mongodb')
 const type_graphql_1 = require('type-graphql')
 let Professional = class Professional extends typegoose_1.Typegoose {}
+__decorate(
+  [type_graphql_1.Field(), __metadata('design:type', mongodb_1.ObjectId)],
+  Professional.prototype,
+  '_id',
+  void 0
+)
 __decorate(
   [type_graphql_1.Field(), typegoose_1.prop({ required: true }), __metadata('design:type', String)],
   Professional.prototype,

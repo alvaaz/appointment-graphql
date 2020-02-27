@@ -75,16 +75,15 @@ __decorate(
 __decorate(
   [type_graphql_1.Field(), __metadata('design:type', String)],
   ProfessionalInput.prototype,
-  'lastname',
+  'lastName',
   void 0
 )
 ProfessionalInput = __decorate([type_graphql_1.InputType()], ProfessionalInput)
 let ProfessionalResolver = class ProfessionalResolver {
-  // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
   createProfessional(options) {
     return __awaiter(this, void 0, void 0, function*() {
-      const newProfessional = yield new Professional_1.ProfessionalModel(options).save()
-      return newProfessional
+      const professional = new Professional_1.ProfessionalModel(Object.assign({}, options))
+      return yield professional.save()
     })
   }
 }
