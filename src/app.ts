@@ -6,9 +6,8 @@ import { ObjectId } from 'mongodb'
 import { mongoAtlas } from './database'
 import { ObjectIdScalar } from './object-id.scalar'
 import { ProfessionalResolver } from './resolvers/ProfessionalResolver'
-import { GraphQLSchema } from 'graphql'
 
-const bootstrap = async (): Promise<GraphQLSchema> => {
+const bootstrap = async (): Promise<void> => {
   try {
     mongoAtlas()
 
@@ -22,9 +21,7 @@ const bootstrap = async (): Promise<GraphQLSchema> => {
     const { url } = await server.listen(3000)
 
     console.log(`Server is running, GraphQL Playground available at ${url}`)
-    return schema
   } catch (err) {
-    console.error(err)
     throw err
   }
 }
