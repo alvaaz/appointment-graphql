@@ -1,11 +1,11 @@
-import * as mongoose from 'mongoose'
-import * as dotenv from 'dotenv'
+import { connect } from 'mongoose'
+import dotenv from 'dotenv'
 
 dotenv.config()
 
-export async function connect(): Promise<void> {
+export async function mongoAtlas(): Promise<void> {
   try {
-    await mongoose.connect(
+    await connect(
       `mongodb+srv://${process.env.MONGO_USER}:${process.env.MONGO_PASSWORD}@hcvm-q6gjl.mongodb.net/${process.env.MONGO_DB}?retryWrites=true&w=majority`,
       {
         useNewUrlParser: true
