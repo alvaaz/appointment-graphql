@@ -1,6 +1,6 @@
 import { prop as Property, getModelForClass } from '@typegoose/typegoose'
 import { ObjectId } from 'mongodb'
-import { Field, ObjectType } from 'type-graphql'
+import { Field, ObjectType, Int } from 'type-graphql'
 
 @ObjectType()
 export class Professional {
@@ -14,6 +14,10 @@ export class Professional {
   @Field()
   @Property({ required: true })
   lastName: string
+
+  @Field(() => Int)
+  @Property({ required: true })
+  identification: number
 }
 
 export const ProfessionalModel = getModelForClass(Professional)

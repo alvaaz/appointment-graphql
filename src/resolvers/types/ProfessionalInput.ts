@@ -1,4 +1,4 @@
-import { InputType, Field } from 'type-graphql'
+import { InputType, Field, Int } from 'type-graphql'
 import { Professional } from '../../entities/Professional'
 
 @InputType()
@@ -8,4 +8,7 @@ export class ProfessionalInput implements Partial<Professional> {
 
   @Field()
   lastName: string
+
+  @Field(() => Int)
+  identification: number
 }

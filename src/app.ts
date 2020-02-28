@@ -6,13 +6,14 @@ import { ObjectId } from 'mongodb'
 import { mongoAtlas } from './database'
 import { ObjectIdScalar } from './object-id.scalar'
 import { ProfessionalResolver } from './resolvers/ProfessionalResolver'
+import { SpecialtyResolver } from './resolvers/SpecialtyResolver'
 
 const bootstrap = async (): Promise<void> => {
   try {
     mongoAtlas()
 
     const schema = await buildSchema({
-      resolvers: [ProfessionalResolver],
+      resolvers: [ProfessionalResolver, SpecialtyResolver],
       scalarsMap: [{ type: ObjectId, scalar: ObjectIdScalar }],
       validate: false
     })
