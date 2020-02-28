@@ -14,7 +14,7 @@
   },
   "scripts": {
     "start": "yarn build && yarn watch-node",
-    "build": "tsc",
+    "build": "tsc --init",
     "watch": "concurrently -k -p \"[{name}]\" -n \"TypeScript,Node\" -c \"cyan.bold,green.bold\" \"yarn watch-ts\" \"yarn watch-node\"",
     "watch-node": "nodemon dist/app.js",
     "watch-ts": "tsc -w",

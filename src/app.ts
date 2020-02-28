@@ -13,7 +13,8 @@ const bootstrap = async (): Promise<void> => {
 
     const schema = await buildSchema({
       resolvers: [ProfessionalResolver],
-      scalarsMap: [{ type: ObjectId, scalar: ObjectIdScalar }]
+      scalarsMap: [{ type: ObjectId, scalar: ObjectIdScalar }],
+      validate: false
     })
 
     const server = new ApolloServer({ schema })
