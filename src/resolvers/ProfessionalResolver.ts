@@ -1,3 +1,4 @@
+import { ObjectId } from 'mongodb'
 import { Resolver, Mutation, Arg, Query } from 'type-graphql'
 import { Professional, ProfessionalModel } from '../entities/Professional'
 import { ProfessionalInput } from './types/ProfessionalInput'
@@ -17,7 +18,7 @@ export class ProfessionalResolver {
         }
       })
     } catch (err) {
-      console.log('Erroooooor', err)
+      throw new Error(`Something goes wrong ${err}`)
     }
   }
 
@@ -34,7 +35,21 @@ export class ProfessionalResolver {
         specialties: specialties(professional.specialties)
       }
     } catch (err) {
-      console.log('Erroooooor', err)
+      throw new Error(`Something goes wrong ${err}`)
+    }
+  }
+
+  @Mutation(() => Professional)
+  async deleteProfessional(@Arg('professional') professional: ObjectId): Promise<Professional> {
+    try {
+      const professionalDeleted = await ProfessionalModel.findOneAndRemove({ _id: professional })
+      await SpecialtyModel.updateMany(
+        { _id: { $in: professionalDeleted.specialties } },
+        { $pull: { professionals: professional } }
+      )
+      return professionalDeleted
+    } catch (err) {
+      throw new Error(`Something goes wrong ${err}`)
     }
   }
 }

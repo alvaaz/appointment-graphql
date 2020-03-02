@@ -5,7 +5,9 @@
 
 type Mutation {
   createProfessional(options: ProfessionalInput): Professional
+  deleteProfessional(professional: ObjectId): Professional
   createSpecialty(options: SpecialtyInput): Specialty
+  deleteSpecialty(specialty: ObjectId): Specialty
 }
 
 # Mongo object id scalar type

@@ -9,7 +9,8 @@ export async function mongoAtlas(): Promise<void> {
       `mongodb+srv://${process.env.MONGO_USER}:${process.env.MONGO_PASSWORD}@hcvm-q6gjl.mongodb.net/${process.env.MONGO_DB}?retryWrites=true&w=majority`,
       {
         useNewUrlParser: true,
-        useUnifiedTopology: true
+        useUnifiedTopology: true,
+        useFindAndModify: false
       }
     )
     console.log('>>> DB is connected')
