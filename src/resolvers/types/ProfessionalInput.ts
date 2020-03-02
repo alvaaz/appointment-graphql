@@ -4,9 +4,8 @@ import { ObjectId } from 'mongodb'
 
 @InputType()
 export class ProfessionalInput {
-
-  @Field(type => ObjectId)  // Added by Ryann
-  _id: ObjectId             // Added by Ryann
+  @Field(type => ObjectId) // Added by Ryann
+  _id: ObjectId // Added by Ryann
 
   @Field()
   firstName: string
@@ -18,6 +17,6 @@ export class ProfessionalInput {
   identification: number
 
   @Field(() => [ObjectId])
-  specialties: ObjectId[]   // Added by Ryann
+  specialties: ObjectId[] // Added by Ryann
   // specialties: Specialty[]
 }

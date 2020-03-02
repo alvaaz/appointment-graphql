@@ -4,9 +4,8 @@ import { ObjectId } from 'mongodb'
 
 @InputType()
 export class SpecialtyInput {
-
-  @Field(type => ObjectId)   // Added by Ryann
-  _id: ObjectId              // Added by Ryann
+  @Field(type => ObjectId) // Added by Ryann
+  _id: ObjectId // Added by Ryann
 
   @Field()
   name: string

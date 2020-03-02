@@ -20,7 +20,6 @@ const specialties = async (specialtyIds: string): Promise<Specialty[]> => {
 
 @Resolver()
 export class ProfessionalResolver {
-
   @Query(() => [Professional])
   async professionals(): Promise<Professional[]> {
     return await ProfessionalModel.find({})
@@ -29,11 +28,12 @@ export class ProfessionalResolver {
   @Mutation(() => Professional)
   async createProfessional(@Arg('options') options: ProfessionalInput): Promise<Professional> {
     try {
-    
-      const professional = await new ProfessionalModel({...options}).save()
-      await SpecialtyModel.updateMany({_id: { $in: professional.specialties }},{$addToSet: { professionals: professional }})
+      const professional = await new ProfessionalModel({ ...options }).save()
+      await SpecialtyModel.updateMany(
+        { _id: { $in: professional.specialties } },
+        { $addToSet: { professionals: professional } }
+      )
       return ProfessionalModel.findById(professional._id).populate('specialties')
-
     } catch (err) {
       console.log('Erroooooor', err)
     }

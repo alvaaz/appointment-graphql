@@ -4,7 +4,6 @@ import { SpecialtyInput } from './types/SpecialtyInput'
 
 @Resolver()
 export class SpecialtyResolver {
-  
   @Query(() => [Specialty])
   async specialties(): Promise<Specialty[]> {
     try {
@@ -23,5 +22,4 @@ export class SpecialtyResolver {
       console.log('Erroooooor', err)
     }
   }
-
 }
