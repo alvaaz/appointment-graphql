@@ -14,16 +14,16 @@ scalar ObjectId
 type Professional {
   _id: ObjectId
   firstName: String
-  identification: Int
   lastName: String
+  identification: Int
   specialties: [Specialty!]
 }
 
 input ProfessionalInput {
   _id: ObjectId
   firstName: String
-  identification: Int
   lastName: String
+  identification: Int
   specialties: [ObjectId]
 }
 
@@ -35,6 +35,7 @@ type Query {
 type Specialty {
   _id: ObjectId
   name: String
+  professionals: [Professional!]
 }
 
 input SpecialtyInput {

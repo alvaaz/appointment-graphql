@@ -1,11 +1,10 @@
 import { InputType, Field, Int } from 'type-graphql'
-import { Specialty } from '../../entities/Specialty'
 import { ObjectId } from 'mongodb'
 
 @InputType()
 export class ProfessionalInput {
-  @Field(type => ObjectId) // Added by Ryann
-  _id: ObjectId // Added by Ryann
+  @Field(() => ObjectId)
+  _id: ObjectId
 
   @Field()
   firstName: string
@@ -17,6 +16,5 @@ export class ProfessionalInput {
   identification: number
 
   @Field(() => [ObjectId])
-  specialties: ObjectId[] // Added by Ryann
-  // specialties: Specialty[]
+  specialties: ObjectId[]
 }

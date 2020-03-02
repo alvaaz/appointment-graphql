@@ -25,8 +25,8 @@ export class Professional {
   identification: number
 
   @Field(() => [Specialty], { nullable: true })
-  @ArrayProperty({ ref: Specialty, default: [] }) // Changed by Ryann
-  specialties: Specialty[] // Changed by Ryann
+  @ArrayProperty({ ref: 'Specialty', items: Specialty, default: [] })
+  specialties: ObjectId[]
 }
 
 export const ProfessionalModel = getModelForClass(Professional)

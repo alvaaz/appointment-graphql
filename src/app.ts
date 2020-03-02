@@ -28,7 +28,8 @@ const bootstrap = async (): Promise<void> => {
 
     console.log(`Server is running, GraphQL Playground available at ${url}`)
   } catch (err) {
-    throw err
+    console.log('El errror', err)
+    return err
   }
 }
 

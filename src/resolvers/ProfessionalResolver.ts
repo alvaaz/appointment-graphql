@@ -1,28 +1,24 @@
 import { Resolver, Mutation, Arg, Query } from 'type-graphql'
 import { Professional, ProfessionalModel } from '../entities/Professional'
 import { ProfessionalInput } from './types/ProfessionalInput'
-import { Specialty, SpecialtyModel } from '../entities/Specialty'
-
-const specialties = async (specialtyIds: string): Promise<Specialty[]> => {
-  try {
-    const specialties = await SpecialtyModel.find({ _id: { $in: specialtyIds } })
-    console.log('ss', specialties)
-    return specialties.map(specialty => {
-      return {
-        _id: specialty._id,
-        name: specialty.name
-      }
-    })
-  } catch (err) {
-    throw new Error(`Something goes wrong ${err}`)
-  }
-}
+import { SpecialtyModel } from '../entities/Specialty'
+import { specialties } from './helpers/populate'
 
 @Resolver()
 export class ProfessionalResolver {
   @Query(() => [Professional])
   async professionals(): Promise<Professional[]> {
-    return await ProfessionalModel.find({})
+    try {
+      const professionals = await ProfessionalModel.find()
+      return professionals.map(professional => {
+        return {
+          ...professional.toObject(),
+          specialties: specialties(professional.specialties)
+        }
+      })
+    } catch (err) {
+      console.log('Erroooooor', err)
+    }
   }
 
   @Mutation(() => Professional)
@@ -33,7 +29,10 @@ export class ProfessionalResolver {
         { _id: { $in: professional.specialties } },
         { $addToSet: { professionals: professional } }
       )
-      return ProfessionalModel.findById(professional._id).populate('specialties')
+      return {
+        ...professional.toObject(),
+        specialties: specialties(professional.specialties)
+      }
     } catch (err) {
       console.log('Erroooooor', err)
     }
