@@ -1,7 +1,8 @@
 import {
   prop as Property,
   arrayProp as ArrayProperty,
-  getModelForClass
+  getModelForClass,
+  Ref
 } from '@typegoose/typegoose'
 import { ObjectId } from 'mongodb'
 import { Field, ObjectType, Int } from 'type-graphql'
@@ -25,11 +26,14 @@ export class Professional {
   identification: number
 
   @Field(() => [Specialty], { nullable: true })
-  @ArrayProperty({
-    items: Specialty,
-    default: []
-  })
-  specialties: Specialty[]
+  @ArrayProperty({ref: Specialty, default: []})     // Changed by Ryann
+  specialties: Ref<Specialty[]>                     // Changed by Ryann
+  
+  // @ArrayProperty({
+  //   items: Specialty,
+  //   default: []
+  // })
+  // specialties: Specialty[]
 }
 
 export const ProfessionalModel = getModelForClass(Professional)
