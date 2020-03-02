@@ -32,12 +32,7 @@ export class ProfessionalResolver {
     
       const professional = await new ProfessionalModel({...options}).save()
       await SpecialtyModel.updateMany({_id: { $in: professional.specialties }},{$addToSet: { professionals: professional }})
-
-
-      return {
-        ...professional.toObject(),
-        specialties: specialties.bind(this, professional.specialties)
-      }
+      return ProfessionalModel.findById(professional._id).populate('specialties')
 
     } catch (err) {
       console.log('Erroooooor', err)

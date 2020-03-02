@@ -10,7 +10,7 @@ import { SpecialtyResolver } from './resolvers/SpecialtyResolver'
 
 const bootstrap = async (): Promise<void> => {
   try {
-    mongoAtlas()
+    await mongoAtlas()
 
     const schema = await buildSchema({
       resolvers: [ProfessionalResolver, SpecialtyResolver],
