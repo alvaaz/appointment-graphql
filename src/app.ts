@@ -15,7 +15,12 @@ const bootstrap = async (): Promise<void> => {
     const schema = await buildSchema({
       resolvers: [ProfessionalResolver, SpecialtyResolver],
       scalarsMap: [{ type: ObjectId, scalar: ObjectIdScalar }],
-      validate: false
+      validate: false,
+      nullableByDefault: true,
+      emitSchemaFile: {
+        path: __dirname + '/schema.gql',
+        commentDescriptions: true
+      }
     })
 
     const server = new ApolloServer({ schema })

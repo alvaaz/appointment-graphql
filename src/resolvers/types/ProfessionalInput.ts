@@ -1,8 +1,9 @@
 import { InputType, Field, Int } from 'type-graphql'
-import { Professional } from '../../entities/Professional'
+import { Specialty } from '../../entities/Specialty'
+import { ObjectId } from 'mongodb'
 
 @InputType()
-export class ProfessionalInput implements Partial<Professional> {
+export class ProfessionalInput {
   @Field()
   firstName: string
 
@@ -11,4 +12,7 @@ export class ProfessionalInput implements Partial<Professional> {
 
   @Field(() => Int)
   identification: number
+
+  @Field(() => [ObjectId])
+  specialties: Specialty[]
 }

@@ -6,7 +6,11 @@ import { SpecialtyInput } from './types/SpecialtyInput'
 export class SpecialtyResolver {
   @Query(() => [Specialty])
   async specialties(): Promise<Specialty[]> {
-    return await SpecialtyModel.find({})
+    try {
+      return await SpecialtyModel.find({})
+    } catch (err) {
+      console.log('Erroooooor', err)
+    }
   }
 
   @Mutation(() => Specialty)
