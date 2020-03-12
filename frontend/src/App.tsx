@@ -1,106 +1,123 @@
-import * as React from 'react';
-import { TextField } from './components/Input';
-import { GlobalStyle } from './components/GlobalStyle';
+import * as React from "react";
+import { TextField } from "./components/Input";
+import { GlobalStyle } from "./styles/GlobalStyles";
+import { api } from "./config";
+import { Calendar } from "./components/Calendar";
+import { Doctor, Specialty, AvailableDays } from "./helpers/interfaces";
 
-interface Doctor {
-  especialidades: string
+interface IProps {}
+interface IState {
+  specialties?: [];
+  specialty?: Specialty;
+  doctors?: [];
+  doctor?: Doctor;
+  placeholder?: string | null;
+  availableDays?: AvailableDays[];
+  disabledDays?: string[];
 }
 
-interface MyProps {}
-interface MyState {
-  specialties: [],
-  specialty: string | null,
-  specialtyID: number | null,
-  doctors: [],
-  doctor: string | null,
-  doctorID: number | null
-}
-class App extends React.Component <MyProps, MyState> {
-  constructor(props: MyProps) {
+class App extends React.Component<IProps, IState> {
+  constructor(props: IProps) {
     super(props);
     this.state = {
       specialties: [],
-      specialty: null,
-      specialtyID: 0,
+      specialty: { id: null, name: null },
       doctors: [],
-      doctor: null,
-      doctorID: null
-    }
+      doctor: { id: null, name: null },
+      placeholder: null,
+      availableDays: [],
+      disabledDays: []
+    };
+  }
+
+  setStateAsync(state: IState) {
+    return new Promise(resolve => {
+      this.setState(state, resolve);
+    });
+  }
+
+  async getAvailableDays() {
+    const getAvailableDays = await fetch(
+      `${api}/availablehours?specialty_id=${this.state.specialty.id}&professional_id=${this.state.doctor.id}`
+    );
+    const availableDays = await getAvailableDays.json();
+    this.setState({
+      availableDays: availableDays.data.availableDays,
+      disabledDays: availableDays.data.disabledDays
+    });
   }
 
   async componentDidMount() {
-    const specialties = await fetch('https://agenda.hospitalclinico.cl/api/specialties');
-    const professionals = await fetch(`https://agenda.hospitalclinico.cl/api/professionals/${this.state.specialtyID}`);
-    const json = await specialties.json();
-    const result = await professionals.json();
+    const getSpecialties = await fetch(`${api}/specialties`);
+    const getProfessionals = await fetch(
+      `${api}/professionals/${this.state.specialty.id}`
+    );
+    const specialties = await getSpecialties.json();
+    const professionals = await getProfessionals.json();
     this.setState({
-      specialties: json.data,
-      doctors: result.data
+      specialties: specialties.data,
+      doctors: professionals.data
     });
   }
 
-  doctor = (doctor: string, id: number) => {
-    this.setState({
-      doctor: doctor,
-      doctorID: id,
+  setDoctor = async (doctor: Doctor) => {
+    await this.setStateAsync({
+      doctor: {
+        name: doctor.name,
+        id: doctor.id
+      }
     });
-  }
-  specialty = (specialty: string, id: number) => {
-    this.setState({
-      specialty: specialty,
-      specialtyID: id,
+    this.getAvailableDays();
+  };
+
+  setSpecialty = async (specialty: Specialty) => {
+    await this.setStateAsync({
+      specialty: {
+        id: specialty.id,
+        name: specialty.name
+      },
+      doctor: { id: null, name: null },
+      placeholder: "Cargando doctores..."
     });
-    fetch(`https://agenda.hospitalclinico.cl/api/professionals/${this.state.specialtyID}`)
-      .then(res => res.json())
-      .then(
-        (result) => {
-          this.setState({
-            doctors: result.data
-          })
-        },
-      )
-  }
+    const res = await fetch(`${api}/professionals/${this.state.specialty.id}`);
+    const result = await res.json();
+    this.setState({
+      doctors: result.data,
+      placeholder:
+        result.data.length === 0
+          ? "No hay doctores en la especialidad"
+          : "Selecciona el doctor"
+    });
+    this.getAvailableDays();
+  };
+
   render() {
-    // interface Doctor
-    // var doctor = new Array<Person>();
-
-    let specialties = this.state.doctors;
-    let foundIdx: number;
-    // var result = specialties.reduce<string>((accu, curr, idx, arr) => {
-    //   if (accu.some((value, resIdx, reArr) => {  // present in out array?
-    //     foundIdx = resIdx;
-    //     return (value.orderType == curr.orderType && value.orderDate == curr.orderDate);
-    //   })) {    // already present, increment OrderCount
-    //     accu[foundIdx].orderCount += curr.orderCount;
-    //   }
-    //   else {   // not yet present push the element
-    //     accu.push(curr);
-    //   }
-    //   return accu;
-    // }, []);
     return (
       <div className="App">
         <GlobalStyle />
         <header className="header">
-          <nav className="navbar">
-          </nav>
+          <nav className="navbar" />
         </header>
         <TextField
-          label={'Especialidad'}
-          parentCallback={this.specialty}
-          selectedOption={this.state.specialty}
-          value={this.state.specialty}
+          label="Especialidad"
+          parentCallback={this.setSpecialty}
+          selectedOption={this.state.specialty.name}
+          value={this.state.specialty.name}
           data={this.state.specialties}
           select={true}
         />
         <TextField
-          label={'Médico'}
-          parentCallback={this.doctor}
-          selectedOption={this.state.doctor}
+          label="Médico"
+          parentCallback={this.setDoctor}
+          selectedOption={this.state.doctor.name}
           data={this.state.doctors}
           select={false}
+          placeholder={this.state.placeholder}
         />
-
+        <Calendar
+          availableDays={this.state.availableDays}
+          disabledDays={this.state.disabledDays}
+        />
       </div>
     );
   }
