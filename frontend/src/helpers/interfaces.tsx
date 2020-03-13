@@ -1,10 +1,11 @@
 export interface Doctor {
   id: number | null;
-  name: string | null;
+  firstName: string | null;
+  lastName: string | null;
 }
 
 export interface Specialty {
-  id: number | null;
+  _id: number | null;
   name: string | null;
 }
 

@@ -1,7 +1,8 @@
 import { Professional } from '../professional/professional.interface'
+import { ObjectId } from 'mongodb'
 
 export interface Specialty {
-  _id: string
+  _id: ObjectId
   name: string
-  professionals?: Array<Professional>
+  professionals: Array<Professional>
 }

@@ -2,19 +2,12 @@ import { SpecialtyModel } from '../../specialty/specialty.model'
 import { Specialty } from '../../specialty/specialty.interface'
 import { Professional } from '../../professional/professional.interface'
 import { ProfessionalModel } from '../../professional/professional.model'
-import { professionals } from './merge'
+import { professionals, specialties } from './merge'
 
 export default {
   async Specialties(): Promise<Specialty[] | undefined> {
     try {
-      const specialties = await SpecialtyModel.find()
-      return specialties.map(specialty => {
-        return {
-          _id: specialty._id,
-          name: specialty.name,
-          professionals: professionals.bind(this, specialty.professionals)
-        }
-      })
+      return specialties()
     } catch (err) {
       throw new Error(`Something goes wrong ${err}`)
     }

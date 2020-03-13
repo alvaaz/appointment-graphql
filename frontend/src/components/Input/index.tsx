@@ -14,10 +14,9 @@ interface Props {
 }
 
 interface Item {
-  Nom_Especialidad: string;
-  Id_Especialidad?: string;
-  Id_Profesional?: string;
-  Profesional: string;
+  _id: string;
+  name: string;
+  fullName: string;
 }
 
 export const TextField = (props: Props) => {
@@ -36,7 +35,7 @@ export const TextField = (props: Props) => {
   };
   const handleClick = (e: MouseEvent) => {
     let specialty = {
-      id: e.currentTarget.id,
+      _id: e.currentTarget.id,
       name: e.currentTarget.textContent
     };
     props.parentCallback(specialty);
@@ -58,7 +57,7 @@ export const TextField = (props: Props) => {
     }
     const filteredData = props.data.filter(
       (item: Item) =>
-        item.Profesional.toLowerCase().indexOf(userValue.toLowerCase()) > -1
+        item.fullName.toLowerCase().indexOf(userValue.toLowerCase()) > -1
     );
     setSuggestion(filteredData);
   };
@@ -114,24 +113,16 @@ export const TextField = (props: Props) => {
                   Todas
                 </Item>
                 {props.data.map((item: Item, i) => (
-                  <Item
-                    id={item.Id_Especialidad}
-                    onClick={e => handleClick(e)}
-                    key={i}
-                  >
-                    {capitalize(item.Nom_Especialidad)}
+                  <Item id={item._id} onClick={e => handleClick(e)} key={i}>
+                    {capitalize(item.name)}
                   </Item>
                 ))}
               </ul>
             ) : (
               <ul>
                 {suggestion.map((item: Item, i) => (
-                  <Item
-                    id={item.Id_Profesional}
-                    onClick={e => handleClick(e)}
-                    key={i}
-                  >
-                    {capitalize(item.Profesional)}
+                  <Item id={item._id} onClick={e => handleClick(e)} key={i}>
+                    {item.fullName}
                   </Item>
                 ))}
               </ul>

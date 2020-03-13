@@ -14,6 +14,18 @@ export default buildSchema(`
     specialties: [Specialty!]
   }
 
+  type Offer {
+    _id: ID
+    name: String
+    begin: String
+    end: String
+    professional: Professional
+    specialty: Specialty
+    interval: Int
+    createdAt: String
+    updatedAt: String
+  }
+
   type Specialty {
     _id: ID
     name: String!
@@ -29,6 +41,15 @@ export default buildSchema(`
     name: String!
   }
 
+  input OfferInput {
+    professional: ID!
+    specialty: ID!
+    name: String!
+    begin: String!
+    end: String!
+    interval: Int!
+  }
+
   input ProfessionalInput {
     firstName: String!
     lastName: String!
@@ -37,7 +58,7 @@ export default buildSchema(`
 
   type RootQuery {
     Users: [User]
-    Professionals: [Professional]
+    Professionals(specialtyId: String): [Professional]
     Specialties: [Specialty]
   }
 
@@ -47,6 +68,7 @@ export default buildSchema(`
     createSpecialty(specialtyInput: SpecialtyInput): Specialty
     deleteProfessional(_id: String!): Professional
     assignSpecialties(_id: String! specialties: [String]): Professional
+    createOffer(offerInput: OfferInput): Offer
   }
 
   schema {

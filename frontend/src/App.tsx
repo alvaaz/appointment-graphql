@@ -5,6 +5,17 @@ import { api } from "./config";
 import { Calendar } from "./components/Calendar";
 import { Doctor, Specialty, AvailableDays } from "./helpers/interfaces";
 
+const init = (data: { query: string; variables?: { id: number } }) => {
+  return {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Accept: "application/json"
+    },
+    body: JSON.stringify(data)
+  };
+};
+
 interface IProps {}
 interface IState {
   specialties?: [];
@@ -21,9 +32,9 @@ class App extends React.Component<IProps, IState> {
     super(props);
     this.state = {
       specialties: [],
-      specialty: { id: null, name: null },
+      specialty: { _id: null, name: null },
       doctors: [],
-      doctor: { id: null, name: null },
+      doctor: { id: null, firstName: null, lastName: null },
       placeholder: null,
       availableDays: [],
       disabledDays: []
@@ -38,7 +49,7 @@ class App extends React.Component<IProps, IState> {
 
   async getAvailableDays() {
     const getAvailableDays = await fetch(
-      `${api}/availablehours?specialty_id=${this.state.specialty.id}&professional_id=${this.state.doctor.id}`
+      `${api}/availablehours?specialty_id=${this.state.specialty._id}&professional_id=${this.state.doctor.id}`
     );
     const availableDays = await getAvailableDays.json();
     this.setState({
@@ -48,22 +59,43 @@ class App extends React.Component<IProps, IState> {
   }
 
   async componentDidMount() {
-    const getSpecialties = await fetch(`${api}/specialties`);
-    const getProfessionals = await fetch(
-      `${api}/professionals/${this.state.specialty.id}`
+    const getSpecialties = await fetch(
+      api,
+      init({
+        query: "{ Specialties { _id, name } }"
+      })
     );
     const specialties = await getSpecialties.json();
-    const professionals = await getProfessionals.json();
+
+    const getProfessionals = await fetch(
+      api,
+      init({
+        query: "{ Professionals { _id, firstName, lastName } }"
+      })
+    );
+
+    const professionalsData = await getProfessionals.json();
+
+    const professionals = professionalsData.data.Professionals.map(
+      (professional: { _id: string; firstName: string; lastName: string }) => {
+        return {
+          ...professional,
+          fullName: `${professional.firstName} ${professional.lastName}`
+        };
+      }
+    );
+
     this.setState({
-      specialties: specialties.data,
-      doctors: professionals.data
+      specialties: specialties.data.Specialties,
+      doctors: professionals
     });
   }
 
   setDoctor = async (doctor: Doctor) => {
     await this.setStateAsync({
       doctor: {
-        name: doctor.name,
+        lastName: doctor.lastName,
+        firstName: doctor.firstName,
         id: doctor.id
       }
     });
@@ -73,22 +105,42 @@ class App extends React.Component<IProps, IState> {
   setSpecialty = async (specialty: Specialty) => {
     await this.setStateAsync({
       specialty: {
-        id: specialty.id,
+        _id: specialty._id,
         name: specialty.name
       },
-      doctor: { id: null, name: null },
+      doctor: { id: null, firstName: null, lastName: null },
       placeholder: "Cargando doctores..."
     });
-    const res = await fetch(`${api}/professionals/${this.state.specialty.id}`);
-    const result = await res.json();
+
+    const getProfessionalsBySpecialty = await fetch(
+      api,
+      init({
+        query: `query ProfessionalsQuery($id: String) {
+          Professionals(specialtyId: $id) { _id, firstName, lastName }
+        }`,
+        variables: { id: this.state.specialty._id }
+      })
+    );
+
+    const professionalsBySpecialtyData = await getProfessionalsBySpecialty.json();
+
+    const professionals = professionalsBySpecialtyData.data.Professionals.map(
+      (professional: { _id: string; firstName: string; lastName: string }) => {
+        return {
+          ...professional,
+          fullName: `${professional.firstName} ${professional.lastName}`
+        };
+      }
+    );
+
     this.setState({
-      doctors: result.data,
+      doctors: professionals,
       placeholder:
-        result.data.length === 0
+        professionalsBySpecialtyData.data.length === 0
           ? "No hay doctores en la especialidad"
           : "Selecciona el doctor"
     });
-    this.getAvailableDays();
+    // this.getAvailableDays();
   };
 
   render() {
@@ -109,7 +161,7 @@ class App extends React.Component<IProps, IState> {
         <TextField
           label="Médico"
           parentCallback={this.setDoctor}
-          selectedOption={this.state.doctor.name}
+          selectedOption={this.state.doctor.firstName}
           data={this.state.doctors}
           select={false}
           placeholder={this.state.placeholder}
