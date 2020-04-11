@@ -14,6 +14,18 @@ export default buildSchema(`
     specialties: [Specialty!]
   }
 
+  type Hour {
+    _id: ID
+    date: String
+    professional: Professional
+    specialty: Specialty
+    status: Boolean
+    offer: Offer
+    hours: [String]
+    createdAt: String
+    updatedAt: String
+  }
+
   type Offer {
     _id: ID
     name: String
@@ -50,6 +62,17 @@ export default buildSchema(`
     interval: Int!
   }
 
+  input HourInput {
+    date: String!
+    professional: ID!
+    specialty: ID!
+  }
+
+  input GetHourInput {
+    professional: ID
+    specialty: ID
+  }
+
   input ProfessionalInput {
     firstName: String!
     lastName: String!
@@ -60,6 +83,7 @@ export default buildSchema(`
     Users: [User]
     Professionals(specialtyId: String): [Professional]
     Specialties: [Specialty]
+    Hours(getHourInput: GetHourInput): [Hour]
   }
 
   type RootMutation {
@@ -69,6 +93,7 @@ export default buildSchema(`
     deleteProfessional(_id: String!): Professional
     assignSpecialties(_id: String! specialties: [String]): Professional
     createOffer(offerInput: OfferInput): Offer
+    createHour(hourInput: HourInput): Hour
   }
 
   schema {

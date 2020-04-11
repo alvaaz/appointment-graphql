@@ -109,7 +109,7 @@ export const TextField = (props: Props) => {
           {isComponentVisible &&
             (props.select ? (
               <ul>
-                <Item id="0" onClick={e => handleClick(e)} key="0">
+                <Item id="" onClick={e => handleClick(e)} key="0">
                   Todas
                 </Item>
                 {props.data.map((item: Item, i) => (

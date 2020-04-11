@@ -1,15 +1,16 @@
 import { ObjectId } from 'mongodb'
+import { Offer } from '../offer/offer.interface'
 import { Professional } from '../professional/professional.interface'
 import { Specialty } from '../specialty/specialty.interface'
 
-export interface Offer {
+export interface Hour {
   _id: ObjectId
-  name: string
-  begin: Date
-  end: Date
-  professional?: Professional | ObjectId
-  specialty?: Specialty | ObjectId
-  interval: number
+  date: Date
+  professional: Professional
+  specialty: Specialty
+  status: boolean
+  offer: Offer
   createdAt: string
   updatedAt: string
+  hours?: string[]
 }

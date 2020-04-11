@@ -5,8 +5,16 @@ const capitalize = (word: string) => {
 
 export { capitalize };
 
-export function getDays(availableDates: string[], month: number) {
-  return [...new Set(availableDates)]
-    .filter(h => new Date(h).getMonth() === month)
+export function getDays(
+  availableDates: [{ date: Date; hours: [] }],
+  month: number
+) {
+  const dates = availableDates.map(hour => hour.date);
+  return dates
+    .filter(
+      h =>
+        new Date(h).getMonth() >= month &&
+        new Date(h).getDate() >= new Date().getDate()
+    )
     .map(h => new Date(h).getDate());
 }

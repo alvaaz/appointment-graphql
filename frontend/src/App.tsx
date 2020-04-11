@@ -3,16 +3,19 @@ import { TextField } from "./components/Input";
 import { GlobalStyle } from "./styles/GlobalStyles";
 import { api } from "./config";
 import { Calendar } from "./components/Calendar";
-import { Doctor, Specialty, AvailableDays } from "./helpers/interfaces";
+import { Doctor, Specialty } from "./helpers/interfaces";
 
-const init = (data: { query: string; variables?: { id: number } }) => {
+const init = (data: {
+  query: string;
+  variables?: { id?: number; professional?: number; specialty?: number };
+}) => {
   return {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
-      Accept: "application/json"
+      Accept: "application/json",
     },
-    body: JSON.stringify(data)
+    body: JSON.stringify(data),
   };
 };
 
@@ -23,8 +26,9 @@ interface IState {
   doctors?: [];
   doctor?: Doctor;
   placeholder?: string | null;
-  availableDays?: AvailableDays[];
+  availableDays?: [{ date: Date; hours: [] }];
   disabledDays?: string[];
+  closestDay?: Date;
 }
 
 class App extends React.Component<IProps, IState> {
@@ -34,27 +38,37 @@ class App extends React.Component<IProps, IState> {
       specialties: [],
       specialty: { _id: null, name: null },
       doctors: [],
-      doctor: { id: null, firstName: null, lastName: null },
+      doctor: { _id: null, firstName: null, lastName: null },
       placeholder: null,
-      availableDays: [],
-      disabledDays: []
+      availableDays: [{ date: null, hours: [] }],
+      disabledDays: [],
+      closestDay: null,
     };
   }
 
   setStateAsync(state: IState) {
-    return new Promise(resolve => {
+    return new Promise((resolve) => {
       this.setState(state, resolve);
     });
   }
 
   async getAvailableDays() {
     const getAvailableDays = await fetch(
-      `${api}/availablehours?specialty_id=${this.state.specialty._id}&professional_id=${this.state.doctor.id}`
+      api,
+      init({
+        query: `query HoursQuery( $professional: ID, $specialty: ID ) {
+          Hours(getHourInput: { professional: $professional, specialty: $specialty }) { date hours }
+        }`,
+        variables: {
+          professional: this.state.doctor._id,
+          specialty: this.state.specialty._id,
+        },
+      })
     );
     const availableDays = await getAvailableDays.json();
+
     this.setState({
-      availableDays: availableDays.data.availableDays,
-      disabledDays: availableDays.data.disabledDays
+      availableDays: availableDays.data.Hours,
     });
   }
 
@@ -62,7 +76,7 @@ class App extends React.Component<IProps, IState> {
     const getSpecialties = await fetch(
       api,
       init({
-        query: "{ Specialties { _id, name } }"
+        query: "{ Specialties { _id, name } }",
       })
     );
     const specialties = await getSpecialties.json();
@@ -70,7 +84,7 @@ class App extends React.Component<IProps, IState> {
     const getProfessionals = await fetch(
       api,
       init({
-        query: "{ Professionals { _id, firstName, lastName } }"
+        query: "{ Professionals { _id, firstName, lastName } }",
       })
     );
 
@@ -80,14 +94,14 @@ class App extends React.Component<IProps, IState> {
       (professional: { _id: string; firstName: string; lastName: string }) => {
         return {
           ...professional,
-          fullName: `${professional.firstName} ${professional.lastName}`
+          fullName: `${professional.firstName} ${professional.lastName}`,
         };
       }
     );
 
     this.setState({
       specialties: specialties.data.Specialties,
-      doctors: professionals
+      doctors: professionals,
     });
   }
 
@@ -96,8 +110,8 @@ class App extends React.Component<IProps, IState> {
       doctor: {
         lastName: doctor.lastName,
         firstName: doctor.firstName,
-        id: doctor.id
-      }
+        _id: doctor._id,
+      },
     });
     this.getAvailableDays();
   };
@@ -106,10 +120,10 @@ class App extends React.Component<IProps, IState> {
     await this.setStateAsync({
       specialty: {
         _id: specialty._id,
-        name: specialty.name
+        name: specialty.name,
       },
-      doctor: { id: null, firstName: null, lastName: null },
-      placeholder: "Cargando doctores..."
+      doctor: { _id: null, firstName: null, lastName: null },
+      placeholder: "Cargando doctores...",
     });
 
     const getProfessionalsBySpecialty = await fetch(
@@ -118,7 +132,7 @@ class App extends React.Component<IProps, IState> {
         query: `query ProfessionalsQuery($id: String) {
           Professionals(specialtyId: $id) { _id, firstName, lastName }
         }`,
-        variables: { id: this.state.specialty._id }
+        variables: { id: this.state.specialty._id },
       })
     );
 
@@ -128,7 +142,7 @@ class App extends React.Component<IProps, IState> {
       (professional: { _id: string; firstName: string; lastName: string }) => {
         return {
           ...professional,
-          fullName: `${professional.firstName} ${professional.lastName}`
+          fullName: `${professional.firstName} ${professional.lastName}`,
         };
       }
     );
@@ -138,9 +152,9 @@ class App extends React.Component<IProps, IState> {
       placeholder:
         professionalsBySpecialtyData.data.length === 0
           ? "No hay doctores en la especialidad"
-          : "Selecciona el doctor"
+          : "Selecciona el doctor",
     });
-    // this.getAvailableDays();
+    this.getAvailableDays();
   };
 
   render() {
@@ -166,10 +180,7 @@ class App extends React.Component<IProps, IState> {
           select={false}
           placeholder={this.state.placeholder}
         />
-        <Calendar
-          availableDays={this.state.availableDays}
-          disabledDays={this.state.disabledDays}
-        />
+        <Calendar availableDays={this.state.availableDays} />
       </div>
     );
   }
