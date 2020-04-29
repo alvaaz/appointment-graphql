@@ -1,7 +1,7 @@
-import React, { useState, useEffect, useRef, MouseEvent } from "react";
-import { capitalize } from "../../helpers";
-import { Label, Wrapper, Select, Icon, Input, Box, Item } from "./style";
-import useComponentVisible from "../useComponentVisible";
+import React, { useState, useEffect, useRef, MouseEvent } from 'react';
+import { capitalize } from '../../helpers';
+import { Label, Wrapper, Select, Icon, Input, Box, Item } from './style';
+import useComponentVisible from '../useComponentVisible';
 
 interface Props {
   label: string;
@@ -10,7 +10,7 @@ interface Props {
   parentCallback: Function;
   value?: string | null;
   selectedOption: string | null;
-  placeholder?: string | null;
+  placeholder?: string;
 }
 
 interface Item {
@@ -23,7 +23,7 @@ export const TextField = (props: Props) => {
   const {
     ref,
     isComponentVisible,
-    setIsComponentVisible
+    setIsComponentVisible,
   } = useComponentVisible(false);
   const [suggestion, setSuggestion] = useState<Item[]>(props.data);
   const inputEl = useRef<HTMLInputElement>(null);
@@ -36,17 +36,17 @@ export const TextField = (props: Props) => {
   const handleClick = (e: MouseEvent) => {
     let specialty = {
       _id: e.currentTarget.id,
-      name: e.currentTarget.textContent
+      name: e.currentTarget.textContent,
     };
     props.parentCallback(specialty);
     setIsComponentVisible(false);
     if (inputEl && inputEl.current) {
-      inputEl.current.value = specialty.name || "jaja";
+      inputEl.current.value = specialty.name || 'jaja';
     }
   };
   useEffect(() => {
     if (inputEl && inputEl.current) {
-      inputEl.current.value = "";
+      inputEl.current.value = '';
     }
   }, [props.data]);
 
@@ -75,8 +75,8 @@ export const TextField = (props: Props) => {
             isOpen={isComponentVisible}
             onClick={handleData}
           >
-            <span style={{ alignSelf: "center" }}>
-              {props.value ? props.value : "Selecciona una especialidad"}
+            <span style={{ alignSelf: 'center' }}>
+              {props.value ? props.value : 'Selecciona una especialidad'}
             </span>
           </Select>
         ) : (

@@ -20,7 +20,7 @@ export default {
 
   async deleteProfessional(_id: string): Promise<Professional> {
     try {
-      return await ProfessionalModel.findOneAndRemove({ _id }, err => {
+      return await ProfessionalModel.findOneAndRemove({ _id }, (err) => {
         if (err) throw new Error(`Something goes wrong ${err}`)
       })
     } catch (err) {

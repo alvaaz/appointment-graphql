@@ -77,7 +77,7 @@ export const singleSpecialty = async (specialtyId: ObjectId) => {
     const specialty = await SpecialtyModel.findById(specialtyId)
     return {
       name: specialty.name,
-      professionals: specialty.professionals.map(professional =>
+      professionals: specialty.professionals.map((professional) =>
         singleProfessional.bind(this, specialty.professionals)
       )
     }

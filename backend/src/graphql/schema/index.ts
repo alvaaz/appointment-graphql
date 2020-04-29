@@ -14,16 +14,16 @@ export default buildSchema(`
     specialties: [Specialty!]
   }
 
+  type Off {
+    date: String
+    hours: [String]
+  }
+
   type Hour {
     _id: ID
-    date: String
     professional: Professional
     specialty: Specialty
-    status: Boolean
-    offer: Offer
-    hours: [String]
-    createdAt: String
-    updatedAt: String
+    dates: [Off]
   }
 
   type Offer {

@@ -1,5 +1,5 @@
-import styled from "styled-components";
-import React from "react";
+import styled from 'styled-components';
+import React from 'react';
 
 export const SVG_NEXT = () => {
   return (
@@ -90,12 +90,12 @@ export const Day = styled.div<{
     place-content: center;
     margin: 0 auto;
     background-color: ${props =>
-      props.isSelected ? "#2F55B9" : "transparent"};
+      props.isSelected ? '#2F55B9' : 'transparent'};
     border: ${props =>
-      props.isToday ? "0.2rem solid #2f55b9" : "0.1rem solid transparent"};
+      props.isToday ? '0.2rem solid #2f55b9' : '0.1rem solid transparent'};
     border-radius: 100%;
-    color: ${props => (props.isSelected ? "white" : "#0a1f44")};
-    font-weight: ${props => (props.isToday ? "600" : "400")};
+    color: ${props => (props.isSelected ? 'white' : '#0a1f44')};
+    font-weight: ${props => (props.isToday ? '600' : '400')};
     cursor: pointer;
     outline: none;
     padding: 0;
@@ -104,14 +104,14 @@ export const Day = styled.div<{
     white-space: nowrap;
     width: 2rem;
     height: 2rem;
-    opacity: ${props => (props.isDisabled ? "0.25" : "1")};
+    opacity: ${props => (props.isDisabled ? '0.25' : '1')};
     animation: bounce-button-in 0.45s 0s cubic-bezier(0.175, 0.885, 0.32, 1.275)
       forwards;
     &:hover {
       background: white;
-      color: ${props => (props.isSelected ? "white" : "#0a1f44")};
+      color: ${props => (props.isSelected ? 'white' : '#0a1f44')};
       border: ${props =>
-        props.isDisabled ? "0.1rem solid transparent" : "0.1rem solid #2f55b9"};
+        props.isDisabled ? '0.1rem solid transparent' : '0.1rem solid #2f55b9'};
       color: rgba(0, 0, 0, 0.7);
       text-decoration: none;
     }

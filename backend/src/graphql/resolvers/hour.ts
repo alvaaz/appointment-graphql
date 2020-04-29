@@ -20,35 +20,42 @@ export default {
       )
       const fetchedOffers = await OfferModel.find(inputTransformed)
 
-      const hours = fetchedOffers.reduce((prev, acc) => {
+      const hours = fetchedOffers.reduce((prev, acc, i) => {
         let currentDate = acc.begin.getTime()
         const endDate = acc.end.getTime()
-
+        prev.push({
+          professional: acc.professional,
+          specialty: acc.specialty,
+          dates: []
+        })
         while (currentDate < endDate) {
           const d = new Date(currentDate)
-          if (d.getHours() > 7 && d.getHours() < 20 && d.getDay() < 6 && d.getDay() > 0) {
-            const dateKey = `${d.getMonth()}/${d.getDate()}/${d.getFullYear()}`
-            prev[dateKey] = prev[dateKey] || []
-            prev[dateKey].push(
-              d.toLocaleString('en-US', {
-                hour: 'numeric',
-                minute: 'numeric',
-                second: 'numeric',
-                hour12: true
+          const date = `${d.getMonth() + 1}/${d.getDate()}/${d.getFullYear()}`
+          const dateIndex = prev[i].dates.map((el: { date: string }) => el.date).indexOf(date)
+          if (dateIndex === -1) {
+            if (d.getDay() < 6 && d.getDay() > 0) {
+              prev[i].dates.push({
+                date: date,
+                hours: []
               })
-            )
+            }
+          } else {
+            if (d.getHours() >= 7 && d.getHours() <= 19) {
+              prev[i].dates[dateIndex].hours.push(
+                d.toLocaleString('en-US', {
+                  hour: 'numeric',
+                  minute: 'numeric',
+                  hour12: false
+                })
+              )
+            }
           }
           currentDate = currentDate + acc.interval
         }
         return prev
-      }, {})
-
-      const final = Object.entries(hours).map(([key, value]) => ({
-        date: key,
-        hours: value
-      }))
-
-      return final
+      }, [])
+      console.log(hours)
+      return hours
     } catch (error) {
       throw new Error(error)
     }
