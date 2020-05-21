@@ -28,6 +28,24 @@ export default {
     }
   },
 
+  async updateProfessional({
+    _id,
+    firstName,
+    lastName
+  }: {
+    _id: string
+    firstName: string
+    lastName: string
+  }): Promise<Professional> {
+    try {
+      return await ProfessionalModel.updateOne({ _id }, { firstName, lastName }, (err) => {
+        if (err) throw new Error(`Something goes wrong ${err}`)
+      })
+    } catch (err) {
+      throw new Error(`Something goes wrong ${err}`)
+    }
+  },
+
   async createProfessional({
     professionalInput
   }: {

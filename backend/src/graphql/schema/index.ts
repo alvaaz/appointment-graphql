@@ -91,6 +91,7 @@ export default buildSchema(`
     createProfessional(professionalInput: ProfessionalInput): Professional
     createSpecialty(specialtyInput: SpecialtyInput): Specialty
     deleteProfessional(_id: String!): Professional
+    updateProfessional(_id: String!, firstName: String!, lastName: String!): Professional
     assignSpecialties(_id: String! specialties: [String]): Professional
     createOffer(offerInput: OfferInput): Offer
     createHour(hourInput: HourInput): Hour

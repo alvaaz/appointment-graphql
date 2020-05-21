@@ -1,11 +1,5 @@
 import React, { useReducer, useEffect } from 'react';
-import {
-  AvailableDays,
-  Props,
-  State2,
-  IActions,
-  ActionInput,
-} from '../../helpers/interfaces';
+import { Props, State2, IActions, ActionInput } from '../../helpers/interfaces';
 
 import {
   Wrapper,

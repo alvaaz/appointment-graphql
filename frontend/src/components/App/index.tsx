@@ -1,18 +1,11 @@
 import * as React from 'react';
-import { TextField } from './components/Input';
-import { GlobalStyle } from './styles/GlobalStyles';
-import { api } from './config';
-import { Calendar } from './components/Calendar';
-import { Doctor, Specialty, State } from './helpers/interfaces';
+import { TextField } from '../Input';
+import { api } from '../../config';
+import { Calendar } from '../Calendar';
 
-const init = (data: {
-  query: string;
-  variables?: {
-    id?: number | null;
-    professional?: number | null;
-    specialty?: number | null;
-  };
-}) => ({
+import { Doctor, Specialty, State, Variables } from '../../helpers/interfaces';
+
+const init = (data: { query: string; variables?: Variables }) => ({
   method: 'POST',
   headers: {
     'Content-Type': 'application/json',
@@ -22,29 +15,26 @@ const init = (data: {
 });
 
 class App extends React.Component<{}, State> {
-  constructor(p: {}) {
-    super(p);
-    this.state = {
-      specialties: [],
-      specialty: { _id: null, name: null },
-      doctors: [],
-      doctor: { _id: null, firstName: null, lastName: null },
-      placeholder: '',
-      availableDays: [
-        { dates: [], specialty: { _id: null }, professional: { _id: null } },
-      ],
-      disabledDays: [],
-      closestDay: 0,
-      doctorsCalendar: [
-        {
-          date: '',
-          hours: null,
-          professional: { _id: null },
-          specialty: { _id: null },
-        },
-      ],
-    };
-  }
+  public readonly state: Readonly<State> = {
+    specialties: [],
+    specialty: { _id: null, name: null },
+    doctors: [],
+    doctor: { _id: null, firstName: null, lastName: null },
+    placeholder: '',
+    availableDays: [
+      { dates: [], specialty: { _id: null }, professional: { _id: null } },
+    ],
+    disabledDays: [],
+    closestDay: 0,
+    doctorsCalendar: [
+      {
+        date: '',
+        hours: null,
+        professional: { _id: null },
+        specialty: { _id: null },
+      },
+    ],
+  };
 
   setStateAsync(state: State) {
     return new Promise(resolve => {
@@ -212,7 +202,6 @@ class App extends React.Component<{}, State> {
     } = this.state;
     return (
       <div className="App">
-        <GlobalStyle />
         <header className="header">
           <nav className="navbar" />
         </header>

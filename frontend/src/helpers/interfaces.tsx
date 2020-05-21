@@ -4,6 +4,10 @@ export interface Doctor {
   lastName: string | null;
 }
 
+export interface Professionals {
+  Professionals: Doctor[];
+}
+
 export interface Specialty {
   _id: number | null;
   name: string | null;
@@ -38,6 +42,12 @@ export interface Props {
   availableDays?: AvailableDays[];
   closestDay: Date | number;
 }
+
+export type Variables = {
+  id?: number | null;
+  professional?: number | null;
+  specialty?: number | null;
+};
 
 export interface State2 {
   today: Date;

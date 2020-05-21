@@ -18,10 +18,12 @@ export const GlobalStyle = createGlobalStyle`
   }
   body {
     font-family: 'Work Sans', sans-serif;
+    background-color: #F7FAFC;
   }
 
   code {
     font-family: source-code-pro, Menlo, Monaco, Consolas, "Courier New",
       monospace;
   }
+
 `;
