@@ -1,16 +1,17 @@
 import React, { useState, useEffect, useRef, MouseEvent } from 'react';
-import { capitalize } from '../../helpers';
 import { Label, Wrapper, Select, Icon, Input, Box, Item } from './style';
 import useComponentVisible from '../useComponentVisible';
+import { Doctor, Specialty } from '../../helpers/interfaces';
+import { InputApp } from '../App/style';
 
 interface Props {
   label: string;
   select: boolean;
-  data: [];
+  data: Array<Doctor | Specialty> | null;
   parentCallback: Function;
   value?: string | null;
-  selectedOption: string | null;
   placeholder?: string;
+  disabled?: boolean;
 }
 
 interface Item {
@@ -19,17 +20,31 @@ interface Item {
   fullName: string;
 }
 
-export const TextField = (props: Props) => {
+function isDoctor(entry: Specialty | Doctor): entry is Doctor {
+  return (entry as Doctor).firstName !== undefined;
+}
+
+export const TextField = ({
+  data,
+  value,
+  label,
+  select,
+  placeholder,
+  parentCallback,
+  disabled,
+}: Props) => {
   const {
     ref,
     isComponentVisible,
     setIsComponentVisible,
   } = useComponentVisible(false);
-  const [suggestion, setSuggestion] = useState<Item[]>(props.data);
+  const [suggestion, setSuggestion] = useState<Array<
+    Doctor | Specialty
+  > | null>(data);
   const inputEl = useRef<HTMLInputElement>(null);
 
   const handleData = () => {
-    if (props.data.length) {
+    if (data?.length) {
       setIsComponentVisible(!isComponentVisible);
     }
   };
@@ -38,55 +53,52 @@ export const TextField = (props: Props) => {
       _id: e.currentTarget.id,
       name: e.currentTarget.textContent,
     };
-    props.parentCallback(specialty);
+    parentCallback(specialty);
     setIsComponentVisible(false);
+
     if (inputEl && inputEl.current) {
       inputEl.current.value = specialty.name || 'jaja';
     }
   };
-  useEffect(() => {
-    if (inputEl && inputEl.current) {
-      inputEl.current.value = '';
-    }
-  }, [props.data]);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const userValue = (e.target as HTMLInputElement).value;
     if (inputEl && inputEl.current) {
       inputEl.current.value = userValue;
     }
-    const filteredData = props.data.filter(
-      (item: Item) =>
-        item.fullName.toLowerCase().indexOf(userValue.toLowerCase()) > -1
-    );
+    const filteredData = data
+      ? data.filter(item =>
+          isDoctor(item)
+            ? item.firstName!.toLowerCase().indexOf(userValue.toLowerCase()) >
+              -1
+            : null
+        )
+      : null;
     setSuggestion(filteredData);
   };
   useEffect(() => {
-    setSuggestion(props.data);
-  }, [props.data]);
+    setSuggestion(data);
+  }, [data]);
 
   return (
-    <>
-      <Label htmlFor={props.label}>{props.label}</Label>
-      <Wrapper select={props.select} ref={ref}>
-        {props.select ? (
-          <Select
-            id={props.label}
-            isOpen={isComponentVisible}
-            onClick={handleData}
-          >
+    <InputApp>
+      <Label htmlFor={label}>{label}</Label>
+      <Wrapper select={select} ref={ref}>
+        {select ? (
+          <Select id={label} isOpen={isComponentVisible} onClick={handleData}>
             <span style={{ alignSelf: 'center' }}>
-              {props.value ? props.value : 'Selecciona una especialidad'}
+              {value ? value : 'Selecciona una especialidad'}
             </span>
           </Select>
         ) : (
           <Input
             onFocus={handleData}
             onChange={e => handleChange(e)}
-            id={props.label}
+            id={label}
             isOpen={isComponentVisible}
             ref={inputEl}
-            placeholder={props.placeholder}
+            placeholder={placeholder}
+            disabled={disabled}
           />
         )}
         <Icon>
@@ -107,28 +119,28 @@ export const TextField = (props: Props) => {
         </Icon>
         <Box>
           {isComponentVisible &&
-            (props.select ? (
+            (select ? (
               <ul>
                 <Item id="" onClick={e => handleClick(e)} key="0">
                   Todas
                 </Item>
-                {props.data.map((item: Item, i) => (
+                {data!.map((item: Doctor | Specialty, i: number) => (
                   <Item id={item._id} onClick={e => handleClick(e)} key={i}>
-                    {capitalize(item.name)}
+                    {isDoctor(item) ? item.firstName : item.name}
                   </Item>
                 ))}
               </ul>
             ) : (
               <ul>
-                {suggestion.map((item: Item, i) => (
+                {suggestion?.map((item: Doctor | Specialty, i: number) => (
                   <Item id={item._id} onClick={e => handleClick(e)} key={i}>
-                    {item.fullName}
+                    {isDoctor(item) ? item.firstName : item.name}
                   </Item>
                 ))}
               </ul>
             ))}
         </Box>
       </Wrapper>
-    </>
+    </InputApp>
   );
 };

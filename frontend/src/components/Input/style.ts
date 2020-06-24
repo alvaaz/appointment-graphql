@@ -1,20 +1,21 @@
-import styled, { css } from "styled-components";
+import styled, { css } from 'styled-components';
 
 export const Label = styled.label`
   font-weight: 500;
   color: #8a94a6;
-  padding-bottom: 8px;
+  margin-bottom: 8px;
   text-transform: uppercase;
   font-size: 0.75rem;
+  display: inline-block;
 `;
 
 export const Wrapper = styled.div<{ select: boolean }>`
   position: relative;
   input {
-    cursor: ${props => (props.select ? "pointer" : "text")};
+    cursor: ${props => (props.select ? 'pointer' : 'text')};
   }
   span {
-    display: ${props => (props.select ? "inline-flex" : "none")};
+    display: ${props => (props.select ? 'inline-flex' : 'none')};
   }
 `;
 
@@ -56,7 +57,7 @@ export const Select = styled.div<{ isOpen: boolean }>`
   outline: none;
   appearance: none;
   cursor: pointer;
-
+  user-select: none;
   ${props =>
     props.isOpen &&
     css`
@@ -78,7 +79,7 @@ export const Input = styled.input<{ isOpen: boolean }>`
   max-width: 100%;
   width: 100%;
   display: inline-flex;
-  font-family: "Work Sans", sans-serif;
+  font-family: 'Work Sans', sans-serif;
   font-size: 1rem;
   height: 3em;
   justify-content: flex-start;
@@ -91,6 +92,9 @@ export const Input = styled.input<{ isOpen: boolean }>`
   vertical-align: top;
   border-radius: 4px;
   transition: 0.1s all ease-in-out;
+  &:disabled {
+    background-color: #e9ecef;
+  }
   &:empty {
     border-color: #dceeff;
   }
@@ -132,6 +136,7 @@ export const Item = styled.li`
   color: #4e5d78;
   margin-top: 8px;
   text-transform: capitalize;
+  user-select: none;
   &:hover {
     background: #f3f1fa;
     border-radius: 8px;

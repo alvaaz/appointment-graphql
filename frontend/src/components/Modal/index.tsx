@@ -22,7 +22,7 @@ export const Modal = ({
   id,
   closeModal,
 }: {
-  id: number | null;
+  id: string | undefined;
   closeModal: () => void;
 }) => {
   return (

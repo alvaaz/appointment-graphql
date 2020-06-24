@@ -6,6 +6,7 @@ import { api } from '../../config';
 import { useTheme } from '../../context/ModalContext';
 import { useQuery } from '../../lib/api';
 import { Button } from '../Style';
+import { PROFESSIONALS } from '../../queries';
 
 const mutation = `
   mutation createProfessional($firstName: String!, $lastName: String!){
@@ -18,16 +19,6 @@ const mutation = `
       lastName
   }
 }`;
-
-const PROFESSIONALS = `
-  query {
-    Professionals {
-      _id,
-      firstName,
-      lastName
-    }
-  }
-`;
 
 export const Admin = () => {
   const [values, setValues] = useState({ firstName: '', lastName: '' });

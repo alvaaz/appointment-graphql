@@ -1,5 +1,5 @@
 import { Specialty } from '../specialty/specialty.interface'
-import { ObjectId } from 'mongodb'
+import { ObjectId, Collection } from 'mongodb'
 
 export interface Professional {
   _id: ObjectId
