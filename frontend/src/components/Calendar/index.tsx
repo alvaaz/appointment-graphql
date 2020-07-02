@@ -1,5 +1,18 @@
 import React, { useReducer, useEffect } from 'react';
-import { Props, State2, IActions, ActionInput } from '../../helpers/interfaces';
+import {
+  DAYS,
+  DAYS_LEAP,
+  DAYS_OF_THE_WEEK,
+  MONTHS,
+  isLeapYear,
+} from './utilities';
+
+import {
+  CalendarProps,
+  CalendarState,
+  CalendarActions,
+  ActionInput,
+} from '../../helpers/interfaces';
 
 import {
   Wrapper,
@@ -12,7 +25,817 @@ import {
   SVG_NEXT,
 } from './style';
 
-const actionTypes: IActions = {
+const data = [
+  {
+    _id: '234234',
+    professional: {
+      firstName: 'Arturo',
+      lastName: 'Vargas',
+    },
+    dates: [
+      {
+        date: '6/31/2020',
+        hours: ['18:56', '19:16', '19:36', '19:56'],
+      },
+      {
+        date: '7/1/2020',
+        hours: [
+          '07:16',
+          '07:36',
+          '07:56',
+          '08:16',
+          '08:36',
+          '08:56',
+          '09:16',
+          '09:36',
+          '09:56',
+          '10:16',
+          '10:36',
+          '10:56',
+          '11:16',
+          '11:36',
+          '11:56',
+          '12:16',
+          '12:36',
+          '12:56',
+          '13:16',
+          '13:36',
+          '13:56',
+          '14:16',
+          '14:36',
+          '14:56',
+          '15:16',
+          '15:36',
+          '15:56',
+          '16:16',
+          '16:36',
+          '16:56',
+          '17:16',
+          '17:36',
+          '17:56',
+          '18:16',
+          '18:36',
+          '18:56',
+          '19:16',
+          '19:36',
+          '19:56',
+        ],
+      },
+      {
+        date: '7/2/2020',
+        hours: [
+          '07:16',
+          '07:36',
+          '07:56',
+          '08:16',
+          '08:36',
+          '08:56',
+          '09:16',
+          '09:36',
+          '09:56',
+          '10:16',
+          '10:36',
+          '10:56',
+          '11:16',
+          '11:36',
+          '11:56',
+          '12:16',
+          '12:36',
+          '12:56',
+          '13:16',
+          '13:36',
+          '13:56',
+          '14:16',
+          '14:36',
+          '14:56',
+          '15:16',
+          '15:36',
+          '15:56',
+          '16:16',
+          '16:36',
+          '16:56',
+          '17:16',
+          '17:36',
+          '17:56',
+          '18:16',
+          '18:36',
+          '18:56',
+          '19:16',
+          '19:36',
+          '19:56',
+        ],
+      },
+      {
+        date: '7/3/2020',
+        hours: [
+          '07:16',
+          '07:36',
+          '07:56',
+          '08:16',
+          '08:36',
+          '08:56',
+          '09:16',
+          '09:36',
+          '09:56',
+          '10:16',
+          '10:36',
+          '10:56',
+          '11:16',
+          '11:36',
+          '11:56',
+          '12:16',
+          '12:36',
+          '12:56',
+          '13:16',
+          '13:36',
+          '13:56',
+          '14:16',
+          '14:36',
+          '14:56',
+          '15:16',
+          '15:36',
+          '15:56',
+          '16:16',
+          '16:36',
+          '16:56',
+          '17:16',
+          '17:36',
+          '17:56',
+          '18:16',
+          '18:36',
+          '18:56',
+          '19:16',
+          '19:36',
+          '19:56',
+        ],
+      },
+      {
+        date: '7/6/2020',
+        hours: [
+          '07:16',
+          '07:36',
+          '07:56',
+          '08:16',
+          '08:36',
+          '08:56',
+          '09:16',
+          '09:36',
+          '09:56',
+          '10:16',
+          '10:36',
+          '10:56',
+          '11:16',
+          '11:36',
+          '11:56',
+          '12:16',
+          '12:36',
+          '12:56',
+          '13:16',
+          '13:36',
+          '13:56',
+          '14:16',
+          '14:36',
+          '14:56',
+          '15:16',
+          '15:36',
+          '15:56',
+          '16:16',
+          '16:36',
+          '16:56',
+          '17:16',
+          '17:36',
+          '17:56',
+          '18:16',
+          '18:36',
+          '18:56',
+          '19:16',
+          '19:36',
+          '19:56',
+        ],
+      },
+      {
+        date: '7/7/2020',
+        hours: [
+          '07:16',
+          '07:36',
+          '07:56',
+          '08:16',
+          '08:36',
+          '08:56',
+          '09:16',
+          '09:36',
+          '09:56',
+          '10:16',
+          '10:36',
+          '10:56',
+          '11:16',
+          '11:36',
+          '11:56',
+          '12:16',
+          '12:36',
+          '12:56',
+          '13:16',
+          '13:36',
+          '13:56',
+          '14:16',
+          '14:36',
+          '14:56',
+          '15:16',
+          '15:36',
+          '15:56',
+          '16:16',
+          '16:36',
+          '16:56',
+          '17:16',
+          '17:36',
+          '17:56',
+          '18:16',
+          '18:36',
+          '18:56',
+          '19:16',
+          '19:36',
+          '19:56',
+        ],
+      },
+      {
+        date: '7/8/2020',
+        hours: [
+          '07:16',
+          '07:36',
+          '07:56',
+          '08:16',
+          '08:36',
+          '08:56',
+          '09:16',
+          '09:36',
+          '09:56',
+          '10:16',
+          '10:36',
+          '10:56',
+          '11:16',
+          '11:36',
+          '11:56',
+          '12:16',
+          '12:36',
+          '12:56',
+          '13:16',
+          '13:36',
+          '13:56',
+          '14:16',
+          '14:36',
+          '14:56',
+          '15:16',
+          '15:36',
+          '15:56',
+          '16:16',
+          '16:36',
+          '16:56',
+          '17:16',
+        ],
+      },
+    ],
+  },
+  {
+    _id: '9872',
+    professional: {
+      firstName: 'Gabriel',
+      lastName: 'Vargas',
+    },
+    dates: [
+      {
+        date: '6/30/2020',
+        hours: ['17:56', '18:16', '18:36', '18:56', '19:16', '19:36', '19:56'],
+      },
+      {
+        date: '7/1/2020',
+        hours: [
+          '07:16',
+          '07:36',
+          '07:56',
+          '08:16',
+          '08:36',
+          '08:56',
+          '09:16',
+          '09:36',
+          '09:56',
+          '10:16',
+          '10:36',
+          '10:56',
+          '11:16',
+          '11:36',
+          '11:56',
+          '12:16',
+          '12:36',
+          '12:56',
+          '13:16',
+          '13:36',
+          '13:56',
+          '14:16',
+          '14:36',
+          '14:56',
+          '15:16',
+          '15:36',
+          '15:56',
+          '16:16',
+          '16:36',
+          '16:56',
+          '17:16',
+          '17:36',
+          '17:56',
+          '18:16',
+          '18:36',
+          '18:56',
+          '19:16',
+          '19:36',
+          '19:56',
+        ],
+      },
+      {
+        date: '7/2/2020',
+        hours: [
+          '07:16',
+          '07:36',
+          '07:56',
+          '08:16',
+          '08:36',
+          '08:56',
+          '09:16',
+          '09:36',
+          '09:56',
+          '10:16',
+          '10:36',
+          '10:56',
+          '11:16',
+          '11:36',
+          '11:56',
+          '12:16',
+          '12:36',
+          '12:56',
+          '13:16',
+          '13:36',
+          '13:56',
+          '14:16',
+          '14:36',
+          '14:56',
+          '15:16',
+          '15:36',
+          '15:56',
+          '16:16',
+          '16:36',
+          '16:56',
+          '17:16',
+          '17:36',
+          '17:56',
+          '18:16',
+          '18:36',
+          '18:56',
+          '19:16',
+          '19:36',
+          '19:56',
+        ],
+      },
+      {
+        date: '7/3/2020',
+        hours: [
+          '07:16',
+          '07:36',
+          '07:56',
+          '08:16',
+          '08:36',
+          '08:56',
+          '09:16',
+          '09:36',
+          '09:56',
+          '10:16',
+          '10:36',
+          '10:56',
+          '11:16',
+          '11:36',
+          '11:56',
+          '12:16',
+          '12:36',
+          '12:56',
+          '13:16',
+          '13:36',
+          '13:56',
+          '14:16',
+          '14:36',
+          '14:56',
+          '15:16',
+          '15:36',
+          '15:56',
+          '16:16',
+          '16:36',
+          '16:56',
+          '17:16',
+          '17:36',
+          '17:56',
+          '18:16',
+          '18:36',
+          '18:56',
+          '19:16',
+          '19:36',
+          '19:56',
+        ],
+      },
+      {
+        date: '7/6/2020',
+        hours: [
+          '07:16',
+          '07:36',
+          '07:56',
+          '08:16',
+          '08:36',
+          '08:56',
+          '09:16',
+          '09:36',
+          '09:56',
+          '10:16',
+          '10:36',
+          '10:56',
+          '11:16',
+          '11:36',
+          '11:56',
+          '12:16',
+          '12:36',
+          '12:56',
+          '13:16',
+          '13:36',
+          '13:56',
+          '14:16',
+          '14:36',
+          '14:56',
+          '15:16',
+          '15:36',
+          '15:56',
+          '16:16',
+          '16:36',
+          '16:56',
+          '17:16',
+          '17:36',
+          '17:56',
+          '18:16',
+          '18:36',
+          '18:56',
+          '19:16',
+          '19:36',
+          '19:56',
+        ],
+      },
+      {
+        date: '7/7/2020',
+        hours: [
+          '07:16',
+          '07:36',
+          '07:56',
+          '08:16',
+          '08:36',
+          '08:56',
+          '09:16',
+          '09:36',
+          '09:56',
+          '10:16',
+          '10:36',
+          '10:56',
+          '11:16',
+          '11:36',
+          '11:56',
+          '12:16',
+          '12:36',
+          '12:56',
+          '13:16',
+          '13:36',
+          '13:56',
+          '14:16',
+          '14:36',
+          '14:56',
+          '15:16',
+          '15:36',
+          '15:56',
+          '16:16',
+          '16:36',
+          '16:56',
+          '17:16',
+          '17:36',
+          '17:56',
+          '18:16',
+          '18:36',
+          '18:56',
+          '19:16',
+          '19:36',
+          '19:56',
+        ],
+      },
+      {
+        date: '7/8/2020',
+        hours: [
+          '07:16',
+          '07:36',
+          '07:56',
+          '08:16',
+          '08:36',
+          '08:56',
+          '09:16',
+          '09:36',
+          '09:56',
+          '10:16',
+          '10:36',
+          '10:56',
+          '11:16',
+          '11:36',
+          '11:56',
+          '12:16',
+          '12:36',
+          '12:56',
+          '13:16',
+          '13:36',
+          '13:56',
+          '14:16',
+          '14:36',
+          '14:56',
+          '15:16',
+          '15:36',
+          '15:56',
+          '16:16',
+          '16:36',
+          '16:56',
+          '17:16',
+        ],
+      },
+    ],
+  },
+  {
+    _id: '222333',
+    professional: {
+      firstName: 'Fernando',
+      lastName: 'Quinteros',
+    },
+    dates: [
+      {
+        date: '8/31/2020',
+        hours: ['18:56', '19:16', '19:36', '19:56'],
+      },
+      {
+        date: '8/1/2020',
+        hours: [
+          '07:16',
+          '07:36',
+          '07:56',
+          '08:16',
+          '08:36',
+          '08:56',
+          '09:16',
+          '09:36',
+          '09:56',
+          '10:16',
+          '10:36',
+          '10:56',
+          '11:16',
+          '11:36',
+          '11:56',
+          '12:16',
+          '12:36',
+          '12:56',
+          '13:16',
+          '13:36',
+          '13:56',
+          '14:16',
+          '14:36',
+          '14:56',
+          '15:16',
+          '15:36',
+          '15:56',
+          '16:16',
+          '16:36',
+          '16:56',
+          '17:16',
+          '17:36',
+          '17:56',
+          '18:16',
+          '18:36',
+          '18:56',
+          '19:16',
+          '19:36',
+          '19:56',
+        ],
+      },
+      {
+        date: '8/2/2020',
+        hours: [
+          '07:16',
+          '07:36',
+          '07:56',
+          '08:16',
+          '08:36',
+          '08:56',
+          '09:16',
+          '09:36',
+          '09:56',
+          '10:16',
+          '10:36',
+          '10:56',
+          '11:16',
+          '11:36',
+          '11:56',
+          '12:16',
+          '12:36',
+          '12:56',
+          '13:16',
+          '13:36',
+          '13:56',
+          '14:16',
+          '14:36',
+          '14:56',
+          '15:16',
+          '15:36',
+          '15:56',
+          '16:16',
+          '16:36',
+          '16:56',
+          '17:16',
+          '17:36',
+          '17:56',
+          '18:16',
+          '18:36',
+          '18:56',
+          '19:16',
+          '19:36',
+          '19:56',
+        ],
+      },
+      {
+        date: '8/3/2020',
+        hours: [
+          '07:16',
+          '07:36',
+          '07:56',
+          '08:16',
+          '08:36',
+          '08:56',
+          '09:16',
+          '09:36',
+          '09:56',
+          '10:16',
+          '10:36',
+          '10:56',
+          '11:16',
+          '11:36',
+          '11:56',
+          '12:16',
+          '12:36',
+          '12:56',
+          '13:16',
+          '13:36',
+          '13:56',
+          '14:16',
+          '14:36',
+          '14:56',
+          '15:16',
+          '15:36',
+          '15:56',
+          '16:16',
+          '16:36',
+          '16:56',
+          '17:16',
+          '17:36',
+          '17:56',
+          '18:16',
+          '18:36',
+          '18:56',
+          '19:16',
+          '19:36',
+          '19:56',
+        ],
+      },
+      {
+        date: '8/6/2020',
+        hours: [
+          '07:16',
+          '07:36',
+          '07:56',
+          '08:16',
+          '08:36',
+          '08:56',
+          '09:16',
+          '09:36',
+          '09:56',
+          '10:16',
+          '10:36',
+          '10:56',
+          '11:16',
+          '11:36',
+          '11:56',
+          '12:16',
+          '12:36',
+          '12:56',
+          '13:16',
+          '13:36',
+          '13:56',
+          '14:16',
+          '14:36',
+          '14:56',
+          '15:16',
+          '15:36',
+          '15:56',
+          '16:16',
+          '16:36',
+          '16:56',
+          '17:16',
+          '17:36',
+          '17:56',
+          '18:16',
+          '18:36',
+          '18:56',
+          '19:16',
+          '19:36',
+          '19:56',
+        ],
+      },
+      {
+        date: '8/7/2020',
+        hours: [
+          '07:16',
+          '07:36',
+          '07:56',
+          '08:16',
+          '08:36',
+          '08:56',
+          '09:16',
+          '09:36',
+          '09:56',
+          '10:16',
+          '10:36',
+          '10:56',
+          '11:16',
+          '11:36',
+          '11:56',
+          '12:16',
+          '12:36',
+          '12:56',
+          '13:16',
+          '13:36',
+          '13:56',
+          '14:16',
+          '14:36',
+          '14:56',
+          '15:16',
+          '15:36',
+          '15:56',
+          '16:16',
+          '16:36',
+          '16:56',
+          '17:16',
+          '17:36',
+          '17:56',
+          '18:16',
+          '18:36',
+          '18:56',
+          '19:16',
+          '19:36',
+          '19:56',
+        ],
+      },
+      {
+        date: '8/8/2020',
+        hours: [
+          '07:16',
+          '07:36',
+          '07:56',
+          '08:16',
+          '08:36',
+          '08:56',
+          '09:16',
+          '09:36',
+          '09:56',
+          '10:16',
+          '10:36',
+          '10:56',
+          '11:16',
+          '11:36',
+          '11:56',
+          '12:16',
+          '12:36',
+          '12:56',
+          '13:16',
+          '13:36',
+          '13:56',
+          '14:16',
+          '14:36',
+          '14:56',
+          '15:16',
+          '15:36',
+          '15:56',
+          '16:16',
+          '16:36',
+          '16:56',
+          '17:16',
+        ],
+      },
+    ],
+  },
+];
+
+const actionTypes: CalendarActions = {
   NEXT_MONTH: 'NEXT_MONTH',
   PREV_MONTH: 'PREV_MONTH',
   SET_MONTH: 'SET_MONTH',
@@ -29,43 +852,46 @@ const getStartDayOfMonth = (day: number | Date) => {
   return new Date(date.getFullYear(), date.getMonth(), 1).getDay();
 };
 
-const initialState: State2 = {
+const initialState: CalendarState = {
   today: new Date(),
   selectedDay: new Date().getDate(),
   date: new Date(),
   month: new Date().getMonth(),
   year: new Date().getFullYear(),
   startDay: getStartDayOfMonth(new Date()),
-  closestDay: 0,
 };
 
-function reducer(state: State2, action: ActionInput): State2 {
+function reducer(state: CalendarState, action: ActionInput): CalendarState {
   switch (action.type) {
-    // case actionTypes.PREV_MONTH:
-    //   return {
-    //     ...state,
-    //     [action.field]: new Date(state.year, state.month - 1).getMonth(),
-    //     startDay: getStartDayOfMonth(new Date(state.year, state.month - 1)),
-    //     date: new Date(state.year, state.month - 1),
-    //     year: new Date(state.year, state.month - 1).getFullYear(),
-    //     selectedDay: 0,
-    //   };
+    case actionTypes.PREV_MONTH:
+      return {
+        ...state,
+        [action.field]: new Date(state.year, state.month - 1).getMonth(),
+        startDay: getStartDayOfMonth(new Date(state.year, state.month - 1)),
+        date: new Date(state.year, state.month - 1),
+        year: new Date(state.year, state.month - 1).getFullYear(),
+        selectedDay: 0,
+      };
 
-    // case actionTypes.NEXT_MONTH:
-    //   return {
-    //     ...state,
-    //     [action.field]: new Date(state.year, state.month + 1).getMonth(),
-    //     startDay: getStartDayOfMonth(new Date(state.year, state.month + 1)),
-    //     date: new Date(state.year, state.month + 1),
-    //     year: new Date(state.year, state.month + 1).getFullYear(),
-    //     selectedDay: 0,
-    //   };
+    case actionTypes.NEXT_MONTH:
+      return {
+        ...state,
+        [action.field]: new Date(state.year, state.month + 1).getMonth(),
+        startDay: getStartDayOfMonth(new Date(state.year, state.month + 1)),
+        date: new Date(state.year, state.month + 1),
+        year: new Date(state.year, state.month + 1).getFullYear(),
+        selectedDay: 0,
+      };
 
     case actionTypes.SET_DATE:
       return {
         ...state,
         [action.field]: new Date(action.payload).getMonth(),
-        selectedDay: new Date(action.payload).getDate(),
+        selectedDay: new Date(
+          state.year,
+          state.month,
+          action.payload
+        ).getDate(),
       };
 
     default:
@@ -73,45 +899,16 @@ function reducer(state: State2, action: ActionInput): State2 {
   }
 }
 
-export const CalendarComp = (props: Props) => {
+export const CalendarComp = (props: CalendarProps) => {
   const [state, dispatch] = useReducer(reducer, initialState);
 
-  const DAYS = [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
-  const DAYS_LEAP = [31, 29, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
-  const DAYS_OF_THE_WEEK = ['LUN', 'MAR', 'MIE', 'JUE', 'VIE', 'SÁB', 'DOM'];
-  const MONTHS = [
-    'ENE',
-    'FEB',
-    'MAR',
-    'ABR',
-    'MAY',
-    'JUN',
-    'JUL',
-    'AGO',
-    'SEP',
-    'OCT',
-    'NOV',
-    'DIC',
-  ];
-
-  function isLeapYear(year: number) {
-    return (year % 4 === 0 && year % 100 !== 0) || year % 400 === 0;
-  }
-
-  // const handleClick = (type: string) => {
-  //   dispatch({
-  //     type: actionTypes.PREV_MONTH,
-  //     field: 'month',
-  //   });
-  // };
-
-  useEffect(() => {
+  const handleMonth = (type: string) => {
     dispatch({
-      type: actionTypes.SET_DATE,
+      type,
       field: 'month',
-      payload: props.closestDay,
+      payload: 8,
     });
-  }, [props.closestDay]);
+  };
 
   const handleClickDay = (type: string, field: string, payload: number) => {
     dispatch({
@@ -121,47 +918,74 @@ export const CalendarComp = (props: Props) => {
     });
   };
 
-  const days = isLeapYear ? DAYS_LEAP : DAYS;
+  const hoursInMonth = () => {
+    const exist = props.availableDays
+      ? props.availableDays.Hours.map(item =>
+          item.dates.filter(
+            date => new Date(date.date).getMonth() === new Date().getMonth()
+          )
+        )
+      : null;
+    console.log(exist);
+  };
+
+  useEffect(() => {
+    props.parentCallback(new Date(state.year, state.month, state.selectedDay));
+    // data.map(professional => {
+    //   professional.dates.map(date => {
+    //     new Date(date.date).setHours(0, 0, 0) ===
+    //     new Date(state.year, state.month, state.selectedDay).setHours(0, 0, 0)
+    //       ? date.hours
+    //       : null;
+    //   });
+    // });
+  }, [state.selectedDay]);
+
+  const days = isLeapYear(state.year) ? DAYS_LEAP : DAYS;
+
+  const daysOfTheWeek = DAYS_OF_THE_WEEK.map(d => (
+    <DayName key={d}>{d}</DayName>
+  ));
+
+  const daysOfTheMonth = Array(days[state.month] + (state.startDay - 1))
+    .fill(null)
+    .map((_, index) => {
+      const d = index - (state.startDay - 2);
+      return (
+        <Day
+          key={index}
+          isToday={d === state.today.getDate()}
+          isSelected={d === state.selectedDay}
+          isDisabled={d < state.selectedDay}
+          onClick={() =>
+            handleClickDay(
+              actionTypes.SET_DATE,
+              'day',
+              new Date(state.year, state.month, d).getDate()
+            )
+          }
+        >
+          <span>{d > 0 ? d : ''}</span>
+        </Day>
+      );
+    });
 
   return (
     <Wrapper>
       <Nav>
-        <Button>
+        <Button onClick={() => handleMonth(actionTypes.PREV_MONTH)}>
           <SVG_PREV />
         </Button>
         <div>
           {MONTHS[state.month]} {state.year}
         </div>
-        <Button>
+        <Button onClick={() => handleMonth(actionTypes.NEXT_MONTH)}>
           <SVG_NEXT />
         </Button>
       </Nav>
       <Body>
-        {DAYS_OF_THE_WEEK.map(d => (
-          <DayName key={d}>{d}</DayName>
-        ))}
-        {Array(days[state.month] + (state.startDay - 1))
-          .fill(null)
-          .map((_, index) => {
-            const d = index - (state.startDay - 2);
-            return (
-              <Day
-                key={index}
-                isToday={d === state.today.getDate()}
-                isSelected={d === state.selectedDay}
-                isDisabled={d < state.selectedDay}
-                onClick={() =>
-                  handleClickDay(
-                    actionTypes.SET_DATE,
-                    'day',
-                    new Date(state.year, state.month, d).getDate()
-                  )
-                }
-              >
-                <span>{d > 0 ? d : ''}</span>
-              </Day>
-            );
-          })}
+        {daysOfTheWeek}
+        {daysOfTheMonth}
       </Body>
     </Wrapper>
   );

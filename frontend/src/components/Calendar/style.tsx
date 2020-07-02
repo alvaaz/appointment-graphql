@@ -52,7 +52,6 @@ export const Wrapper = styled.div`
     0 6px 6px -1px rgba(10, 22, 70, 0.1);
   background-color: white;
   border-radius: 8px;
-  width: 500px;
   table {
     width: 100%;
   }

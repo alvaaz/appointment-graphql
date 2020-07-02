@@ -12,6 +12,16 @@ export interface Specialties {
   Specialties: Specialty[];
 }
 
+export interface Hour {
+  _id: string | undefined;
+  professional: Doctor;
+  specialty: Specialty;
+  dates: {
+    date: string;
+    hours: string[];
+  }[];
+}
+
 export interface Specialty {
   _id: string | undefined;
   name: string | null;
@@ -38,26 +48,24 @@ export interface State {
   placeholder: string;
   availableDays: AvailableDays[];
   disabledDays: string[];
-  closestDay: Date | number;
   doctorsCalendar: DoctorsCalendar[];
 }
 
-export interface Props {
-  availableDays?: AvailableDays[];
-  closestDay: Date | number;
+export interface CalendarProps {
+  availableDays: { Hours: Hour[] } | null;
+  parentCallback: Function;
 }
 
-export interface State2 {
+export interface CalendarState {
   today: Date;
   selectedDay: number;
   date: number | Date;
   month: number;
   year: number;
   startDay: number;
-  closestDay: Date | number;
 }
 
-export interface IActions {
+export interface CalendarActions {
   NEXT_MONTH: string;
   PREV_MONTH: string;
   SET_MONTH: string;
@@ -69,5 +77,5 @@ export interface IActions {
 export interface ActionInput {
   type: string;
   field: string;
-  payload: number | Date;
+  payload: number;
 }

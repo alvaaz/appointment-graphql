@@ -51,3 +51,31 @@ export const TitleApp = styled.h1`
   line-height: 1.5;
   align-self: center;
 `;
+
+export const SubtitleApp = styled.h2`
+  font-size: 1.5rem;
+  margin-bottom: 1.5rem;
+  color: #0a1f44;
+  font-weight: 400;
+`;
+
+export const MainApp = styled.div`
+  display: grid;
+  grid-template-columns: repeat(12, 1fr);
+  gap: 20px;
+`;
+
+export const SectionCalendar = styled.section`
+  grid-column: 4 / 7;
+`;
+
+export const SectionProfessional = styled.section`
+  grid-column: 7 / 10;
+`;
+
+export const ProfessionalsHours = styled.div`
+  box-shadow: 0 0 1px 0 rgba(10, 22, 70, 0.06),
+    0 6px 6px -1px rgba(10, 22, 70, 0.1);
+  background-color: white;
+  border-radius: 8px;
+`;

@@ -2,34 +2,51 @@ import * as React from 'react';
 import { TextField } from '../Input';
 import { Calendar } from '../Calendar';
 import { useQuery } from '../../lib/api';
-import { PROFESSIONALS, SPECIALTIES } from '../../queries';
+import { PROFESSIONALS, SPECIALTIES, HOURS } from '../../queries';
 import { server } from '../../lib/api/server';
-import { HeaderApp, BackButton, TitleApp } from './style';
+
+import {
+  HeaderApp,
+  BackButton,
+  TitleApp,
+  MainApp,
+  SectionCalendar,
+  SubtitleApp,
+  SectionProfessional,
+  ProfessionalsHours,
+} from './style';
 
 import {
   Doctor,
   Specialty,
-  AvailableDays,
   Professionals,
   Specialties,
   DoctorsCalendar,
+  Hour,
 } from '../../helpers/interfaces';
 
 export default function App() {
   const [specialty, setSpecialty] = React.useState<Specialty | null>(null);
-
-  const [doctor, setDoctor] = React.useState<Doctor | null>(null);
-  const [availableDays, setAvailableDays] = React.useState<
-    AvailableDays[] | null
-  >(null);
-  const [closestDay, setClosestDay] = React.useState<Date | number>(0);
+  const [professional, setProfessional] = React.useState<Doctor | null>(null);
+  const [availableDays, setAvailableDays] = React.useState<{
+    Hours: Hour[];
+  } | null>(null);
+  const [daySelected, setDaySelected] = React.useState<Date | null>(null);
   const [doctorsCalendar, setDoctorsCalendar] = React.useState<
     DoctorsCalendar[] | null
   >(null);
 
+  const specialtyId = specialty ? specialty._id : null;
+  const professionalId = professional ? professional._id : null;
+
   React.useEffect(() => {
-    handleChange(specialty ? specialty._id : null);
+    handleChange(specialtyId);
+    getHours(specialtyId, professionalId);
   }, [specialty]);
+
+  React.useEffect(() => {
+    getHours(specialtyId, professionalId);
+  }, [professional]);
 
   const {
     data: professionalsData,
@@ -41,6 +58,32 @@ export default function App() {
   const { data: specialtiesData, error: specialtiesError } = useQuery<
     Specialties
   >(SPECIALTIES);
+
+  const getHours = async (
+    specialtyId?: string | null,
+    professionalId?: string | null,
+    dateBegin: string = '2020-06-01T22:48:05.978Z',
+    dateEnd: string = '2020-06-30T22:48:05.978Z'
+  ) => {
+    const { data: hours } = await server.fetch<
+      { Hours: Hour[] },
+      {
+        specialtyId?: string | null;
+        professionalId?: string | null;
+        dateBegin: string;
+        dateEnd: string;
+      }
+    >({
+      query: HOURS,
+      variables: {
+        professionalId,
+        specialtyId,
+        dateBegin,
+        dateEnd,
+      },
+    });
+    setAvailableDays(hours);
+  };
 
   const specialties = specialtiesData ? specialtiesData.Specialties : null;
   const professionals = professionalsData
@@ -54,6 +97,16 @@ export default function App() {
   const handleChange = async (id: string | null | undefined) => {
     refetch({ id });
   };
+
+  const selectedDayRender = (
+    <h3>
+      {daySelected &&
+        new Date(daySelected).toLocaleString('es-CL', {
+          month: 'long',
+          day: 'numeric',
+        })}
+    </h3>
+  );
 
   return (
     <div className="App">
@@ -69,7 +122,7 @@ export default function App() {
         />
         <TextField
           label="Médico"
-          parentCallback={setDoctor}
+          parentCallback={setProfessional}
           data={professionals}
           select={false}
           placeholder={
@@ -78,196 +131,38 @@ export default function App() {
           disabled={professionalsLoading}
         />
       </HeaderApp>
-      {/* <Calendar availableDays={availableDays} closestDay={closestDay} /> */}
+      <MainApp>
+        <SectionCalendar>
+          <SubtitleApp>Selecciona el día</SubtitleApp>
+          <Calendar
+            availableDays={availableDays}
+            parentCallback={setDaySelected}
+          />
+        </SectionCalendar>
+        <SectionProfessional>
+          <SubtitleApp>Selecciona tu médico y hora</SubtitleApp>
+          <ProfessionalsHours>
+            <header>{selectedDayRender}</header>
+            <div>
+              <div>
+                <figure>
+                  <img src="" />
+                </figure>
+              </div>
+              <div>
+                <h6>Nombre profesional</h6>
+                <div>
+                  <span>especialidad 1</span>
+                  <span>especialidad 2</span>
+                </div>
+              </div>
+            </div>
+            <div>
+              <button>13:15</button>
+            </div>
+          </ProfessionalsHours>
+        </SectionProfessional>
+      </MainApp>
     </div>
   );
 }
-
-// class App extends React.Component<{}, State> {
-
-//   async getAvailableDays() {
-//     const { doctor, specialty } = this.state;
-//     const getAvailableDays = await fetch(
-//       api,
-//       init({
-//         query: `query HoursQuery( $professional: ID, $specialty: ID ) {
-//           Hours(getHourInput: {
-//             professional: $professional,
-//             specialty: $specialty
-//           }) {
-//             professional {
-//               _id
-//             }
-//             specialty {
-//               _id
-//             }
-//             dates {
-//               date
-//               hours
-//             }
-//           }
-//         }`,
-//         variables: {
-//           professional: doctor._id,
-//           specialty: specialty._id,
-//         },
-//       })
-//     );
-//     const availableDays = await getAvailableDays.json();
-
-//     this.setState(
-//       {
-//         availableDays: availableDays.data.Hours,
-//       },
-//       () => {
-//         const now = new Date();
-
-//         let closest = Infinity;
-//         const dates = this.state.availableDays.map((el, index, array) => {
-//           el.dates.forEach(d => {
-//             const date = new Date(d.date);
-//             if (
-//               date >= now &&
-//               (date < new Date(closest) || date.getTime() < closest)
-//             ) {
-//               closest = new Date(d.date).getTime();
-//             }
-//           });
-//           const d = new Date(closest);
-//           const date = `${d.getMonth() + 1}/${d.getDate()}/${d.getFullYear()}`;
-//           const fechas = el.dates.find(x => x.date === date);
-//           if (fechas) {
-//             fechas.professional = array[index].professional;
-//             fechas.specialty = array[index].specialty;
-//           }
-//           return fechas;
-//         });
-//         const doctorsCalendar = dates.filter(el => el !== undefined);
-//         console.log(doctorsCalendar);
-//         this.setState({
-//           closestDay: new Date(closest),
-//           // doctorsCalendar: doctorsCalendar
-//         });
-//       }
-//     );
-//   }
-
-//   async componentDidMount() {
-//     const getSpecialties = await fetch(
-//       api,
-//       init({
-//         query: '{ Specialties { _id, name } }',
-//       })
-//     );
-//     const specialties = await getSpecialties.json();
-
-//     const getProfessionals = await fetch(
-//       api,
-//       init({
-//         query: '{ Professionals { _id, firstName, lastName } }',
-//       })
-//     );
-
-//     const professionalsData = await getProfessionals.json();
-
-//     const professionals = professionalsData.data.Professionals.map(
-//       (professional: { _id: string; firstName: string; lastName: string }) => ({
-//         ...professional,
-//         fullName: `${professional.firstName} ${professional.lastName}`,
-//       })
-//     );
-
-//     this.setState({
-//       specialties: specialties.data.Specialties,
-//       doctors: professionals,
-//     });
-//   }
-
-//   setDoctor = async (doctor: Doctor) => {
-//     await this.setStateAsync({
-//       doctor: {
-//         lastName: doctor.lastName,
-//         firstName: doctor.firstName,
-//         _id: doctor._id,
-//       },
-//     } as State);
-//     this.getAvailableDays();
-//   };
-
-//   setSpecialty = async (specialty: Specialty) => {
-//     await this.setStateAsync({
-//       specialty: {
-//         _id: specialty._id,
-//         name: specialty.name,
-//       },
-//       doctor: { _id: null, firstName: null, lastName: null },
-//       placeholder: 'Cargando doctores...',
-//     } as State);
-
-//     const getProfessionalsBySpecialty = await fetch(
-//       api,
-//       init({
-//         query: `query ProfessionalsQuery($id: String) {
-//           Professionals(specialtyId: $id) { _id, firstName, lastName }
-//         }`,
-//         variables: { id: this.state.specialty._id },
-//       })
-//     );
-
-//     const professionalsBySpecialtyData = await getProfessionalsBySpecialty.json();
-
-//     const professionals = professionalsBySpecialtyData.data.Professionals.map(
-//       (professional: { _id: string; firstName: string; lastName: string }) => ({
-//         ...professional,
-//         fullName: `${professional.firstName} ${professional.lastName}`,
-//       })
-//     );
-
-//     this.setState({
-//       doctors: professionals,
-//       placeholder:
-//         professionalsBySpecialtyData.data.length === 0
-//           ? 'No hay doctores en la especialidad'
-//           : 'Selecciona el doctor',
-//     });
-//     this.getAvailableDays();
-//   };
-
-//   render() {
-//     const {
-//       availableDays,
-//       closestDay,
-//       doctors,
-//       placeholder,
-//       doctor,
-//       specialties,
-//       specialty,
-//     } = this.state;
-//     return (
-//       <div className="App">
-//         <header className="header">
-//           <nav className="navbar" />
-//         </header>
-//         <TextField
-//           label="Especialidad"
-//           parentCallback={this.setSpecialty}
-//           selectedOption={specialty.name}
-//           value={specialty.name}
-//           data={specialties}
-//           select
-//         />
-//         <TextField
-//           label="Médico"
-//           parentCallback={this.setDoctor}
-//           selectedOption={doctor.firstName}
-//           data={doctors}
-//           select={false}
-//           placeholder={placeholder}
-//         />
-//         <Calendar availableDays={availableDays} closestDay={closestDay} />
-//       </div>
-//     );
-//   }
-// }
-
-// export default App;

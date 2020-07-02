@@ -71,6 +71,8 @@ export default buildSchema(`
   input GetHourInput {
     professional: ID
     specialty: ID
+    dateBegin: String
+    dateEnd: String
   }
 
   input ProfessionalInput {

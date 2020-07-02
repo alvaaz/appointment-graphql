@@ -1,46 +1,73 @@
 import { Hour } from '../../hour/hour.interface'
 import { HourModel } from '../../hour/hour.model'
-import { Offer } from '../../offer/offer.interface'
 import { OfferModel } from '../../offer/offer.model'
 import { ObjectId } from 'mongodb'
 
+type T = {
+  professional: ObjectId
+  specialty: ObjectId
+  dateBegin: string
+  dateEnd: string
+}
+
 export default {
-  async Hours({
-    getHourInput
-  }: {
-    getHourInput: {
-      professional: ObjectId
-      specialty: ObjectId
-    }
-  }): Promise<{}[] | undefined> {
+  async Hours({ getHourInput }: { getHourInput: T }): Promise<{}[] | undefined> {
     try {
       const inputTransformed = Object.entries(getHourInput).reduce(
         (a, [k, v]) => (v ? { ...a, [k]: v } : a),
-        {}
+        {} as T
       )
-      const fetchedOffers = await OfferModel.find(inputTransformed)
 
+      delete inputTransformed.dateBegin
+      delete inputTransformed.dateEnd
+
+      const fetchedOffers = await OfferModel.find({
+        professional: inputTransformed.professional,
+        specialty: inputTransformed.specialty,
+        begin: { $gte: new Date(getHourInput.dateBegin) },
+        end: { $lte: new Date(getHourInput.dateEnd) }
+      })
+      console.log(fetchedOffers)
       const hours = fetchedOffers.reduce((prev, acc, i) => {
         let currentDate = acc.begin.getTime()
         const endDate = acc.end.getTime()
-        prev.push({
-          professional: acc.professional,
-          specialty: acc.specialty,
-          dates: []
-        })
+        const indexY = prev.findIndex(
+          (hour) =>
+            hour.professional.toString() === acc.professional.toString() &&
+            hour.specialty.toString() === acc.specialty.toString()
+        )
+        if (indexY === -1) {
+          prev.push({
+            professional: acc.professional,
+            specialty: acc.specialty,
+            dates: []
+          })
+        } else {
+          i = indexY
+        }
+
         while (currentDate < endDate) {
           const d = new Date(currentDate)
           const date = `${d.getMonth() + 1}/${d.getDate()}/${d.getFullYear()}`
           const dateIndex = prev[i].dates.map((el: { date: string }) => el.date).indexOf(date)
+          const conditionalsDate = [
+            d.getDay() < 6,
+            d.getDay() > 0,
+            d > new Date(getHourInput.dateBegin),
+            d < new Date(getHourInput.dateEnd)
+          ]
+          const conditionalsHours = [d.getHours() >= 7, d.getHours() <= 19]
           if (dateIndex === -1) {
-            if (d.getDay() < 6 && d.getDay() > 0) {
+            // Date restrictions
+            if (!conditionalsDate.includes(false)) {
               prev[i].dates.push({
                 date: date,
                 hours: []
               })
             }
           } else {
-            if (d.getHours() >= 7 && d.getHours() <= 19) {
+            // Hours restrictions
+            if (!conditionalsHours.includes(false)) {
               prev[i].dates[dateIndex].hours.push(
                 d.toLocaleString('en-US', {
                   hour: 'numeric',
@@ -54,7 +81,6 @@ export default {
         }
         return prev
       }, [])
-      console.log(hours)
       return hours
     } catch (error) {
       throw new Error(error)
