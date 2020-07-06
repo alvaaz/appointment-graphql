@@ -1,105 +1,119 @@
 import React, { useState } from 'react';
-import { Professionals } from '../../helpers/interfaces';
+import {
+  Professionals,
+  DeleteProfessionalData,
+  DeleteProfessionalVariables,
+  AddProfessionalData,
+  AddProfessionalVariables,
+} from '../../helpers/interfaces';
 import { Wrapper, Sidebar, Main } from './style';
 import { Modal } from '../Modal';
-import { api } from '../../config';
 import { useTheme } from '../../context/ModalContext';
-import { useQuery } from '../../lib/api';
+import { useQuery, useMutation } from '../../lib/api';
 import { Button } from '../Style';
-import { PROFESSIONALS } from '../../queries';
-
-const mutation = `
-  mutation createProfessional($firstName: String!, $lastName: String!){
-    createProfessional(
-      professionalInput: {
-        firstName: $firstName,
-        lastName: $lastName
-      }
-    ) {
-      lastName
-  }
-}`;
+import {
+  PROFESSIONALS,
+  DELETE_PROFESSIONAL,
+  ADD_PROFESSIONAL,
+} from '../../queries';
+import { Tag } from '../Tag';
+import { Table } from '../Table';
 
 export const Admin = () => {
   const [values, setValues] = useState({ firstName: '', lastName: '' });
-
-  // const createDoctorRef = useRef<{ openModal(): void; close(): void }>();
-
-  // const openModal = () => {
-  //   if (createDoctorRef.current) createDoctorRef.current.openModal();
-  // };
-
-  // const closeModal = () => {
-  //   if (createDoctorRef.current) createDoctorRef.current.close();
-  // };
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setValues({ ...values, [name]: value });
   };
+  const [
+    deleteProfessional,
+    { loading: deleteProfessionalLoading, error: deleteProfessionalError },
+  ] = useMutation<DeleteProfessionalData, DeleteProfessionalVariables>(
+    DELETE_PROFESSIONAL
+  );
 
-  const { data } = useQuery<Professionals>(PROFESSIONALS);
-  const doctors = data ? data.Professionals : null;
-  const doctorsList = doctors ? (
-    <>
-      {doctors.map((doctor, key) => {
-        return (
-          <tr key={key}>
-            <td>{doctor._id}</td>
-            <td>{doctor.firstName}</td>
-            <td>{doctor.lastName}</td>
-            <td>
-              <Button
-                variant="secondary"
-                onClick={() =>
-                  setTheme(<Modal id={doctor._id} closeModal={closeModal} />)
-                }
-              >
-                Eliminar
-              </Button>
-            </td>
-          </tr>
-        );
-      })}
-    </>
-  ) : null;
+  const [
+    addProfessional,
+    { loading: addProfessionalLoading, error: addProfessionalError },
+  ] = useMutation<AddProfessionalData, AddProfessionalVariables>(
+    ADD_PROFESSIONAL
+  );
 
-  // const createDoctor = async (e: React.FormEvent<HTMLFormElement>) => {
-  //   e.preventDefault();
-  //   await fetch(api, {
-  //     method: 'POST',
-  //     headers: {
-  //       'Content-Type': 'application/json',
-  //     },
-  //     body: JSON.stringify({
-  //       query: mutation,
-  //       variables: {
-  //         firstName: values.firstName,
-  //         lastName: values.lastName,
-  //       },
-  //     }),
-  //   });
-  //   fetchDoctors();
-  // };
+  const { data, refetch } = useQuery<Professionals>(PROFESSIONALS);
 
-  const handleDelete = async (_id: number | null) => {
-    await fetch(api, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        query: `
-          mutation {
-            deleteProfessional(
-              _id: "${_id}"
-            ) {
-              firstName
-          }
-        }`,
-      }),
-    });
+  const handleDeleteProfessional = async (id: string) => {
+    await deleteProfessional({ id });
+    refetch();
   };
+
+  const handleAddProfessional = async (firstName: string, lastName: string) => {
+    await addProfessional({ firstName, lastName });
+    refetch();
+  };
+
+  const Columns = [
+    {
+      title: 'ID',
+    },
+    {
+      title: 'FirstName',
+    },
+    {
+      title: 'Lastname',
+    },
+    {
+      title: 'Specialties',
+      render: (items: { name: string }[]) => (
+        <>
+          {items.map(item => (
+            <Tag>{item.name}</Tag>
+          ))}
+        </>
+      ),
+    },
+    {
+      title: 'Actions',
+      render: (item: { _id: string }) => (
+        <Button
+          variant="secondary"
+          onClick={() => {
+            setTheme(
+              <Modal
+                id={item._id}
+                closeModal={closeModal}
+                callback={() => handleDeleteProfessional(item._id)}
+              >
+                <div>
+                  <span
+                    style={{
+                      fontWeight: 500,
+                      fontSize: '16px',
+                      lineHeight: 1.4,
+                      display: 'block',
+                    }}
+                  >
+                    Are you sure delete this task?
+                  </span>
+                  <p
+                    style={{
+                      marginTop: '8px',
+                      color: 'rgba(0,0,0,.65)',
+                      fontSize: '14px',
+                    }}
+                  >
+                    Some descriptions
+                  </p>
+                </div>
+              </Modal>
+            );
+          }}
+        >
+          Eliminar
+        </Button>
+      ),
+    },
+  ];
 
   const { setTheme } = useTheme();
   const closeModal = () => setTheme(null);
@@ -110,33 +124,42 @@ export const Admin = () => {
         <a href="www.google.cl">Especialidades</a>
         <a href="www.google.cl">Ofertas</a>
       </Sidebar>
-      {/* <Modal ref={createDoctorRef}>
-        <form onSubmit={e => createDoctor(e)}>
-          <h1>Modal Header</h1>
-          <button onClick={closeModal}>X</button>
-          <h1>Crear médico</h1>
-          <label htmlFor="firstName">Firstname</label>
-          <input type="text" name="firstName" onChange={handleInputChange} />
-          <label htmlFor="lastName">Lastname</label>
-          <input type="text" name="lastName" onChange={handleInputChange} />
-          <button>Guardar</button>
-        </form>
-      </Modal> */}
       <Main>
         <div className="main__header">
           <h1>Médicos</h1>
-          <Button variant="primary">Crear doctor</Button>
+          <Button
+            variant="primary"
+            onClick={() => {
+              setTheme(
+                <Modal
+                  id="8789"
+                  closeModal={closeModal}
+                  callback={() => handleAddProfessional('ddd', 'aaa')}
+                >
+                  <form>
+                    <label htmlFor="firstName">Firstname</label>
+                    <input
+                      type="text"
+                      name="firstName"
+                      value={values.firstName}
+                      onChange={e => handleInputChange(e)}
+                    />
+                    <label htmlFor="lastName">Lastname</label>
+                    <input
+                      type="text"
+                      name="lastName"
+                      value={values.lastName}
+                      onChange={e => handleInputChange(e)}
+                    />
+                  </form>
+                </Modal>
+              );
+            }}
+          >
+            Crear doctor
+          </Button>
         </div>
-        <table>
-          <tbody>
-            <tr>
-              <th>ID</th>
-              <th>Firstname</th>
-              <th>LastName</th>
-            </tr>
-            {doctorsList}
-          </tbody>
-        </table>
+        <Table columns={Columns} dataSource={data} />
       </Main>
     </Wrapper>
   );

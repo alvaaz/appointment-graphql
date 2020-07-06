@@ -2,6 +2,7 @@ export interface Doctor {
   _id: string | undefined;
   firstName: string | null;
   lastName: string | null;
+  specialties: Specialty[];
 }
 
 export interface Professionals {
@@ -10,6 +11,27 @@ export interface Professionals {
 
 export interface Specialties {
   Specialties: Specialty[];
+}
+
+export interface DeleteProfessionalData {
+  _id: string | undefined;
+  firstName: string | null;
+  lastName: string | null;
+}
+
+export interface DeleteProfessionalVariables {
+  id: string | undefined;
+}
+
+export interface AddProfessionalData {
+  _id: string | undefined;
+  firstName: string | null;
+  lastName: string | null;
+}
+
+export interface AddProfessionalVariables {
+  firstName: string | null;
+  lastName: string | null;
 }
 
 export interface Hour {

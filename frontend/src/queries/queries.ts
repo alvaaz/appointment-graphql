@@ -4,6 +4,30 @@ export const PROFESSIONALS = `
       _id
       firstName
       lastName
+      specialties {
+        name
+      }
+    }
+  }
+`;
+
+export const DELETE_PROFESSIONAL = `
+  mutation DeleteProfessional($id: String!) {
+    deleteProfessional(_id: $id) {
+      _id
+      firstName
+      lastName
+    }
+  }
+`;
+
+export const ADD_PROFESSIONAL = `
+  mutation Addprofessional($lastName: String!, $firstName: String!) {
+    createProfessional(professionalInput: {
+      firstName: $firstName
+      lastName: $lastName
+    }) {
+      _id
     }
   }
 `;

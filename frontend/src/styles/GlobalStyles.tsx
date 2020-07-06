@@ -17,7 +17,7 @@ export const GlobalStyle = createGlobalStyle`
     -moz-osx-font-smoothing: grayscale;
   }
   body {
-    font-family: 'Work Sans', sans-serif;
+    font-family: 'DM Sans', sans-serif;
     background-color: #F7FAFC;
   }
 

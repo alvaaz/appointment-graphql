@@ -17,16 +17,21 @@ export default {
         (a, [k, v]) => (v ? { ...a, [k]: v } : a),
         {} as T
       )
+      const query = {
+        specialty: getHourInput.specialty,
+        $or: [
+          {
+            begin: { $gte: new Date(getHourInput.dateBegin), $lte: new Date(getHourInput.dateEnd) }
+          },
+          { end: { $gte: new Date(getHourInput.dateBegin), $lte: new Date(getHourInput.dateEnd) } }
+        ]
+      }
 
-      delete inputTransformed.dateBegin
-      delete inputTransformed.dateEnd
-
-      const fetchedOffers = await OfferModel.find({
-        professional: inputTransformed.professional,
-        specialty: inputTransformed.specialty,
-        begin: { $gte: new Date(getHourInput.dateBegin) },
-        end: { $lte: new Date(getHourInput.dateEnd) }
-      })
+      const fetchedOffers = await OfferModel.find(
+        !getHourInput.professional
+          ? query
+          : Object.assign(query, { professional: getHourInput.professional })
+      )
       console.log(fetchedOffers)
       const hours = fetchedOffers.reduce((prev, acc, i) => {
         let currentDate = acc.begin.getTime()
@@ -50,12 +55,7 @@ export default {
           const d = new Date(currentDate)
           const date = `${d.getMonth() + 1}/${d.getDate()}/${d.getFullYear()}`
           const dateIndex = prev[i].dates.map((el: { date: string }) => el.date).indexOf(date)
-          const conditionalsDate = [
-            d.getDay() < 6,
-            d.getDay() > 0,
-            d > new Date(getHourInput.dateBegin),
-            d < new Date(getHourInput.dateEnd)
-          ]
+          const conditionalsDate = [d.getDay() < 6, d.getDay() > 0]
           const conditionalsHours = [d.getHours() >= 7, d.getHours() <= 19]
           if (dateIndex === -1) {
             // Date restrictions
