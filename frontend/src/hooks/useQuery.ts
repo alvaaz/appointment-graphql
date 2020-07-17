@@ -1,5 +1,5 @@
 import { useEffect, useCallback, useReducer } from 'react';
-import { server } from './server';
+import { server } from '../lib/api/server';
 
 interface State<TData> {
   data: TData | null;
@@ -61,7 +61,6 @@ export const useQuery = <TData = any, TVariables = any>(
           throw console.error(err);
         }
       };
-
       fetchApi();
     },
     [query]

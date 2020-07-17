@@ -1,5 +1,5 @@
-import { useReducer, useState } from 'react';
-import { server } from './server';
+import { useReducer } from 'react';
+import { server } from '../lib/api/server';
 
 interface State<TData> {
   data: TData | null;

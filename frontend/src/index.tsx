@@ -4,12 +4,10 @@ import App from './components/App';
 import { Admin } from './components/Admin';
 import { BrowserRouter as Router, Route, Link } from 'react-router-dom';
 import { GlobalStyle } from './styles/GlobalStyles';
-import { ThemeProvider } from './context/ModalContext';
-import { ModalRoot } from './context/ModalRoot';
+import { ThemeProvider } from './components/Modal/ModalContext';
 
 ReactDOM.render(
   <ThemeProvider>
-    <ModalRoot />
     <Router>
       <ul>
         <li>

@@ -1,6 +1,8 @@
 import React from 'react';
-import { Button } from '../Style';
-import { ModalBody, ModalContent, ModalWrapper } from './style';
+import ReactDOM from 'react-dom';
+import { ModalBody, ModalContent, ModalWrapper, ModalMask } from './style';
+import { useTheme } from './ModalContext';
+import { useComponentVisible } from '../../hooks';
 
 const IconWarning = () => (
   <svg
@@ -18,40 +20,28 @@ const IconWarning = () => (
   </svg>
 );
 
-export const Modal = ({
-  id,
-  closeModal,
-  callback,
-  children,
-}: {
-  id: string | undefined;
-  closeModal: () => void;
-  callback: () => Promise<void>;
-  children: React.ReactNode;
-}) => {
-  return (
-    <ModalWrapper>
-      <ModalBody>
-        <ModalContent>
-          <IconWarning />
-          {children}
-        </ModalContent>
-        <div style={{ marginTop: '1.5rem', textAlign: 'right' }}>
-          <Button variant="secondary" onClick={() => closeModal()}>
-            No
-          </Button>
-          <Button
-            variant="danger"
-            style={{ marginLeft: '8px' }}
-            onClick={() => {
-              callback();
-              closeModal();
-            }}
-          >
-            Yes
-          </Button>
-        </div>
-      </ModalBody>
-    </ModalWrapper>
-  );
+export const Modal = () => {
+  const { modalContent, setModalContent } = useTheme();
+
+  const { ref } = useComponentVisible(false, setModalContent);
+
+  const modalRoot = document.getElementById('modal-root');
+
+  if (!modalRoot) return null;
+
+  if (modalContent) {
+    return ReactDOM.createPortal(
+      <ModalMask>
+        <ModalWrapper ref={ref}>
+          <ModalBody>
+            <ModalContent>
+              <IconWarning />
+              {modalContent}
+            </ModalContent>
+          </ModalBody>
+        </ModalWrapper>
+      </ModalMask>,
+      modalRoot
+    );
+  } else return null;
 };

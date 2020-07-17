@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef, MouseEvent } from 'react';
 import { Label, Wrapper, Select, Icon, Input, Box, Item } from './style';
-import useComponentVisible from '../useComponentVisible';
+import { useComponentVisible } from '../../hooks';
 import { Doctor, Specialty } from '../../helpers/interfaces';
 import { InputApp } from '../App/style';
 

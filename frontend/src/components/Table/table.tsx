@@ -33,8 +33,8 @@ export function Table({ dataSource, columns }: Props) {
     <TableWrapper>
       <THead>
         <TR>
-          {columns.map(column => (
-            <TH>{column.title}</TH>
+          {columns.map((column, key) => (
+            <TH key={key}>{column.title}</TH>
           ))}
         </TR>
       </THead>

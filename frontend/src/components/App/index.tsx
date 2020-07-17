@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { TextField } from '../Input';
 import { Calendar } from '../Calendar';
-import { useQuery } from '../../lib/api';
+import { useQuery } from '../../hooks/';
 import { PROFESSIONALS, SPECIALTIES, HOURS } from '../../queries';
 import { server } from '../../lib/api/server';
 

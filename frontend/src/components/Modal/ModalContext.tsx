@@ -1,8 +1,8 @@
-import React, { createContext, ReactNode, useContext, useEffect } from 'react';
-
+import React, { createContext, ReactNode, useContext } from 'react';
+import { Modal } from '../Modal';
 interface ProfileState {
-  theme: ReactNode;
-  setTheme: React.Dispatch<React.SetStateAction<ReactNode>>;
+  modalContent: ReactNode;
+  setModalContent: React.Dispatch<React.SetStateAction<ReactNode>>;
 }
 
 function createCtx<ProfileState>() {
@@ -18,6 +18,13 @@ function createCtx<ProfileState>() {
 export const [useTheme, CtxProvider] = createCtx<ProfileState>();
 
 export const ThemeProvider: React.FC = ({ children }) => {
-  const [theme, setTheme] = React.useState<ReactNode | null>(null);
-  return <CtxProvider value={{ theme, setTheme }}>{children}</CtxProvider>;
+  const [modalContent, setModalContent] = React.useState<ReactNode | null>(
+    null
+  );
+  return (
+    <CtxProvider value={{ modalContent, setModalContent }}>
+      <Modal />
+      {children}
+    </CtxProvider>
+  );
 };
