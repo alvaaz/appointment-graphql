@@ -19,12 +19,13 @@ export function useComponentVisible(initialIsVisible: boolean, setState?: any) {
   };
 
   useEffect(() => {
+    setIsComponentVisible(initialIsVisible);
     document.addEventListener('keydown', handleHideDropdown, true);
     document.addEventListener('click', handleClickOutside, true);
     return () => {
       document.removeEventListener('keydown', handleHideDropdown, true);
       document.removeEventListener('click', handleClickOutside, true);
     };
-  });
+  }, [initialIsVisible]);
   return { ref, isComponentVisible, setIsComponentVisible };
 }

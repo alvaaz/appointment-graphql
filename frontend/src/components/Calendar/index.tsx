@@ -12,7 +12,7 @@ import {
   CalendarState,
   CalendarActions,
   ActionInput,
-} from '../../helpers/interfaces';
+} from '../../interfaces/';
 
 import {
   Wrapper,

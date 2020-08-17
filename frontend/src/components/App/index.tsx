@@ -1,9 +1,8 @@
 import * as React from 'react';
 import { TextField } from '../Input';
 import { Calendar } from '../Calendar';
-import { useQuery } from '../../hooks/';
+import { useQuery } from '@apollo/client';
 import { PROFESSIONALS, SPECIALTIES, HOURS } from '../../queries';
-import { server } from '../../lib/api/server';
 
 import {
   HeaderApp,
@@ -22,68 +21,49 @@ import {
   Professionals,
   Specialties,
   DoctorsCalendar,
+  AvailableDays,
   Hour,
-} from '../../helpers/interfaces';
+} from '../../interfaces/';
 
+type GetHoursVariables = {
+  specialtyId?: string | null;
+  professionalId?: string | null;
+  dateBegin: string;
+  dateEnd: string;
+};
 export default function App() {
-  const [specialty, setSpecialty] = React.useState<Specialty | null>(null);
-  const [professional, setProfessional] = React.useState<Doctor | null>(null);
-  const [availableDays, setAvailableDays] = React.useState<{
-    Hours: Hour[];
-  } | null>(null);
-  const [daySelected, setDaySelected] = React.useState<Date | null>(null);
-  const [doctorsCalendar, setDoctorsCalendar] = React.useState<
-    DoctorsCalendar[] | null
-  >(null);
-
-  const specialtyId = specialty ? specialty._id : null;
-  const professionalId = professional ? professional._id : null;
-
-  React.useEffect(() => {
-    handleChange(specialtyId);
-    getHours(specialtyId, professionalId);
-  }, [specialty]);
-
-  React.useEffect(() => {
-    getHours(specialtyId, professionalId);
-  }, [professional]);
-
+  // QUERIES AND MUTATION
   const {
     data: professionalsData,
     loading: professionalsLoading,
     error: professionalsError,
-    refetch,
+    refetch: professionalsRefetch,
   } = useQuery<Professionals>(PROFESSIONALS);
 
   const { data: specialtiesData, error: specialtiesError } = useQuery<
     Specialties
   >(SPECIALTIES);
 
-  const getHours = async (
-    specialtyId?: string | null,
-    professionalId?: string | null,
-    dateBegin: string = '2020-06-01T22:48:05.978Z',
-    dateEnd: string = '2020-06-30T22:48:05.978Z'
-  ) => {
-    const { data: hours } = await server.fetch<
-      { Hours: Hour[] },
-      {
-        specialtyId?: string | null;
-        professionalId?: string | null;
-        dateBegin: string;
-        dateEnd: string;
-      }
-    >({
-      query: HOURS,
-      variables: {
-        professionalId,
-        specialtyId,
-        dateBegin,
-        dateEnd,
-      },
-    });
-    setAvailableDays(hours);
-  };
+  //STATES
+  const [specialty, setSpecialty] = React.useState<Specialty | null>(null);
+  const [professional, setProfessional] = React.useState<Doctor | null>(null);
+  const [availableDays, setAvailableDays] = React.useState<{
+    Hours: Hour[];
+  } | null>(null);
+  const [daySelected, setDaySelected] = React.useState<Date | null>(null);
+
+  const specialtyId = specialty ? specialty._id : null;
+  const professionalId = professional ? professional._id : null;
+
+  React.useEffect(() => {
+    professionalsRefetch({ specialtyId });
+    // hoursRefetch({
+    //   specialtyId,
+    //   professionalId,
+    //   dateBegin: new Date().toISOString(),
+    //   dateEnd: '2020-07-30T22:48:05.978Z',
+    // });
+  }, [specialty]);
 
   const specialties = specialtiesData ? specialtiesData.Specialties : null;
   const professionals = professionalsData
@@ -93,10 +73,6 @@ export default function App() {
   if (professionalsError || specialtiesError) {
     return <h2>Uh oh! Something went wrong - please try again</h2>;
   }
-
-  const handleChange = async (id: string | null | undefined) => {
-    refetch({ id });
-  };
 
   const selectedDayRender = (
     <h3>
@@ -111,6 +87,7 @@ export default function App() {
   return (
     <div className="App">
       <HeaderApp>
+        <input type="checkbox" />
         <BackButton />
         <TitleApp>Selecciona especialidad o médico</TitleApp>
         <TextField

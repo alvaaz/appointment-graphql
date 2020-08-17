@@ -1,7 +1,16 @@
 import React, { useState, useEffect, useRef, MouseEvent } from 'react';
-import { Label, Wrapper, Select, Icon, Input, Box, Item } from './style';
+import {
+  Label,
+  Wrapper,
+  Select,
+  Icon,
+  Input,
+  Box,
+  Item,
+  SelectLabel,
+} from './style';
 import { useComponentVisible } from '../../hooks';
-import { Doctor, Specialty } from '../../helpers/interfaces';
+import { Doctor, Specialty } from '../../interfaces/';
 import { InputApp } from '../App/style';
 
 interface Props {
@@ -63,6 +72,7 @@ export const TextField = ({
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const userValue = (e.target as HTMLInputElement).value;
+
     if (inputEl && inputEl.current) {
       inputEl.current.value = userValue;
     }
@@ -76,9 +86,16 @@ export const TextField = ({
       : null;
     setSuggestion(filteredData);
   };
+
   useEffect(() => {
     setSuggestion(data);
   }, [data]);
+
+  const doctorList = suggestion?.map((item: Doctor | Specialty, i: number) => (
+    <Item id={item._id} onClick={e => handleClick(e)} key={i}>
+      {isDoctor(item) ? item.firstName : item.name}
+    </Item>
+  ));
 
   return (
     <InputApp>
@@ -86,9 +103,9 @@ export const TextField = ({
       <Wrapper select={select} ref={ref}>
         {select ? (
           <Select id={label} isOpen={isComponentVisible} onClick={handleData}>
-            <span style={{ alignSelf: 'center' }}>
+            <SelectLabel>
               {value ? value : 'Selecciona una especialidad'}
-            </span>
+            </SelectLabel>
           </Select>
         ) : (
           <Input
@@ -99,6 +116,7 @@ export const TextField = ({
             ref={inputEl}
             placeholder={placeholder}
             disabled={disabled}
+            autoComplete="off"
           />
         )}
         <Icon>
@@ -131,13 +149,7 @@ export const TextField = ({
                 ))}
               </ul>
             ) : (
-              <ul>
-                {suggestion?.map((item: Doctor | Specialty, i: number) => (
-                  <Item id={item._id} onClick={e => handleClick(e)} key={i}>
-                    {isDoctor(item) ? item.firstName : item.name}
-                  </Item>
-                ))}
-              </ul>
+              <ul>{doctorList}</ul>
             ))}
         </Box>
       </Wrapper>

@@ -1,6 +1,6 @@
 import React from 'react';
 import { TH, TD, TR, TableWrapper, THead, TBody } from './style';
-import { Professionals } from '../../helpers/interfaces';
+import { Professionals } from '../../interfaces/';
 
 type Props = {
   dataSource?: Professionals | null;

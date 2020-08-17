@@ -142,3 +142,7 @@ export const Item = styled.li`
     border-radius: 8px;
   }
 `;
+
+export const SelectLabel = styled.span`
+  align-self: center;
+`;

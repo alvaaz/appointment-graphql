@@ -1,3 +1,5 @@
+import React from 'react';
+
 export interface Doctor {
   _id: string | undefined;
   firstName: string | null;
@@ -100,4 +102,11 @@ export interface ActionInput {
   type: string;
   field: string;
   payload: number;
+}
+
+export interface DialogProps {
+  visible: boolean;
+  onOk?: (e: React.MouseEvent<HTMLButtonElement>) => void;
+  onCancel: () => void;
+  children: React.ReactNode;
 }

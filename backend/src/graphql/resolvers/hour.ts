@@ -3,7 +3,7 @@ import { HourModel } from '../../hour/hour.model'
 import { OfferModel } from '../../offer/offer.model'
 import { ObjectId } from 'mongodb'
 
-type T = {
+type GetHourInput = {
   professional: ObjectId
   specialty: ObjectId
   dateBegin: string
@@ -11,12 +11,8 @@ type T = {
 }
 
 export default {
-  async Hours({ getHourInput }: { getHourInput: T }): Promise<{}[] | undefined> {
+  async Hours({ getHourInput }: { getHourInput: GetHourInput }): Promise<{}[] | undefined> {
     try {
-      const inputTransformed = Object.entries(getHourInput).reduce(
-        (a, [k, v]) => (v ? { ...a, [k]: v } : a),
-        {} as T
-      )
       const query = {
         specialty: getHourInput.specialty,
         $or: [
@@ -32,9 +28,10 @@ export default {
           ? query
           : Object.assign(query, { professional: getHourInput.professional })
       )
-      console.log(fetchedOffers)
+
       const hours = fetchedOffers.reduce((prev, acc, i) => {
-        let currentDate = acc.begin.getTime()
+        // acc.begin.getTime() start with first day in offer
+        let currentDate = new Date().getTime()
         const endDate = acc.end.getTime()
         const indexY = prev.findIndex(
           (hour) =>

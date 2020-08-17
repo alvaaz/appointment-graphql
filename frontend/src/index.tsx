@@ -4,11 +4,16 @@ import App from './components/App';
 import { Admin } from './components/Admin';
 import { BrowserRouter as Router, Route, Link } from 'react-router-dom';
 import { GlobalStyle } from './styles/GlobalStyles';
-import { ThemeProvider } from './components/Modal/ModalContext';
+import { ApolloProvider, ApolloClient, InMemoryCache } from '@apollo/client';
+
+const client = new ApolloClient({
+  uri: 'http://localhost:3001/graphql',
+  cache: new InMemoryCache(),
+});
 
 ReactDOM.render(
-  <ThemeProvider>
-    <Router>
+  <Router>
+    <ApolloProvider client={client}>
       <ul>
         <li>
           <Link to="/">Home</Link>
@@ -20,7 +25,7 @@ ReactDOM.render(
       <GlobalStyle />
       <Route path="/" exact component={App} />
       <Route path="/admin" component={Admin} />
-    </Router>
-  </ThemeProvider>,
+    </ApolloProvider>
+  </Router>,
   document.getElementById('root')
 );
