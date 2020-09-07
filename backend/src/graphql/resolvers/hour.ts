@@ -29,6 +29,8 @@ export default {
           : Object.assign(query, { professional: getHourInput.professional })
       )
 
+      console.log(fetchedOffers)
+
       const hours = fetchedOffers.reduce((prev, acc, i) => {
         // acc.begin.getTime() start with first day in offer
         let currentDate = new Date().getTime()
@@ -47,7 +49,7 @@ export default {
         } else {
           i = indexY
         }
-
+        //Get only date next today
         while (currentDate < endDate) {
           const d = new Date(currentDate)
           const date = `${d.getMonth() + 1}/${d.getDate()}/${d.getFullYear()}`

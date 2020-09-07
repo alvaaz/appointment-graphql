@@ -1,6 +1,7 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import App from './components/App';
+import { offers } from './views/offers';
 import { Admin } from './components/Admin';
 import { BrowserRouter as Router, Route, Link } from 'react-router-dom';
 import { GlobalStyle } from './styles/GlobalStyles';

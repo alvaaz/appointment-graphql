@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { TextField } from '../Input';
 import { Calendar } from '../Calendar';
-import { useQuery } from '@apollo/client';
+import { useQuery, useLazyQuery } from '@apollo/client';
 import { PROFESSIONALS, SPECIALTIES, HOURS } from '../../queries';
 
 import {
@@ -44,6 +44,11 @@ export default function App() {
     Specialties
   >(SPECIALTIES);
 
+  const [
+    getHour,
+    { data: hoursData, refetch: hoursRefetch, error: hoursError },
+  ] = useLazyQuery<GetHoursVariables>(HOURS);
+
   //STATES
   const [specialty, setSpecialty] = React.useState<Specialty | null>(null);
   const [professional, setProfessional] = React.useState<Doctor | null>(null);
@@ -57,13 +62,21 @@ export default function App() {
 
   React.useEffect(() => {
     professionalsRefetch({ specialtyId });
-    // hoursRefetch({
-    //   specialtyId,
-    //   professionalId,
-    //   dateBegin: new Date().toISOString(),
-    //   dateEnd: '2020-07-30T22:48:05.978Z',
-    // });
+    setProfessional(null);
+    getHour({
+      variables: {
+        specialtyId,
+        professionalId,
+        dateBegin: new Date().toISOString(),
+        dateEnd: new Date(2020, 9, 0).toISOString(),
+      },
+    });
   }, [specialty]);
+
+  // console.log(
+  //   hoursData.Hours.map(item => item.dates),
+  //   'hours'
+  // );
 
   const specialties = specialtiesData ? specialtiesData.Specialties : null;
   const professionals = professionalsData

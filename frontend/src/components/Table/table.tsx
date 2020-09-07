@@ -1,9 +1,9 @@
 import React from 'react';
 import { TH, TD, TR, TableWrapper, THead, TBody } from './style';
-import { Professionals } from '../../interfaces/';
+import { Professionals, Specialties } from '../../interfaces/';
 
 type Props = {
-  dataSource?: Professionals | null;
+  dataSource?: Specialties | Professionals | null;
   columns: {
     title: string;
     render?: (value: any) => React.ReactNode;

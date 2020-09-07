@@ -22,7 +22,7 @@ export interface DeleteProfessionalData {
 }
 
 export interface DeleteProfessionalVariables {
-  id: string | undefined;
+  id: string | null;
 }
 
 export interface AddProfessionalData {
