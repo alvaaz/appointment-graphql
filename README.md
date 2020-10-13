@@ -8,23 +8,13 @@
   </h3>
 </div>
 
-<!-- TABLA DE CONTENIDOS -->
-
-## Tabla de contenidos
-
-- [Resumen](#overview)
-  - [Hecho con](#built-with)
-- [Características](#features)
-- [¿Cómo usar?](#how-to-use)
-- [Contacto](#contact)
-
 <!-- RESUMEN -->
 
-## Overview
+## Resumen
 
 ![screenshot](https://raw.githubusercontent.com/alvaaz/hcvm/master/screenshot.png)
 
-### Built With
+### Hecho con
 
 - [React](https://reactjs.org/)
 - [GraphQL](https://graphql.org/)
