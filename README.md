@@ -22,7 +22,7 @@
 
 ## Overview
 
-![screenshot](blob:https://imgur.com/b40a31bd-b862-2247-83d0-91acb745caca)
+![screenshot](https://raw.githubusercontent.com/alvaaz/hcvm/master/screenshot.png)
 
 ### Built With
 
