@@ -76,8 +76,10 @@ export interface State {
 }
 
 export interface CalendarProps {
-  availableDays: { Hours: Hour[] } | null;
+  availableDays: string[] | null;
   parentCallback: Function;
+  month: Function;
+  year: Function;
 }
 
 export interface CalendarState {

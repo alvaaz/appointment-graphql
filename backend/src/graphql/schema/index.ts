@@ -26,6 +26,17 @@ export default buildSchema(`
     dates: [Off]
   }
 
+  type P {
+    professional: Professional
+    specialty: Specialty
+    hours: [String]
+  }
+
+  type DatesAvailables {
+    date: String,
+    professionals: [P]
+  }
+
   type Offer {
     _id: ID
     name: String
@@ -85,7 +96,7 @@ export default buildSchema(`
     Users: [User]
     Professionals(specialtyId: String): [Professional]
     Specialties: [Specialty]
-    Hours(getHourInput: GetHourInput): [Hour]
+    Hours(getHourInput: GetHourInput): [DatesAvailables]
   }
 
   type RootMutation {

@@ -57,14 +57,17 @@ export const HOURS = gql`
         dateEnd: $dateEnd
       }
     ) {
-      professional {
-        _id
-      }
-      specialty {
-        _id
-      }
-      dates {
-        date
+      date
+      professionals {
+        professional {
+          _id
+          firstName
+          lastName
+        }
+        specialty {
+          _id
+          name
+        }
         hours
       }
     }

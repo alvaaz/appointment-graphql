@@ -20,9 +20,6 @@ import {
   Specialty,
   Professionals,
   Specialties,
-  DoctorsCalendar,
-  AvailableDays,
-  Hour,
 } from '../../interfaces/';
 
 type GetHoursVariables = {
@@ -31,8 +28,20 @@ type GetHoursVariables = {
   dateBegin: string;
   dateEnd: string;
 };
+
+type GetHoursData = {
+  Hours: {
+    date: string;
+    professionals: {
+      professional: { _id: string; firstName: string };
+      specialty: { _id: string; name: string };
+      hours: string[];
+    }[];
+  }[];
+};
+
 export default function App() {
-  // QUERIES AND MUTATION
+  // Queries & mutations
   const {
     data: professionalsData,
     loading: professionalsLoading,
@@ -44,39 +53,55 @@ export default function App() {
     Specialties
   >(SPECIALTIES);
 
-  const [
-    getHour,
-    { data: hoursData, refetch: hoursRefetch, error: hoursError },
-  ] = useLazyQuery<GetHoursVariables>(HOURS);
+  const [getHour, { data: hoursData }] = useLazyQuery<
+    GetHoursData,
+    GetHoursVariables
+  >(HOURS, {
+    onCompleted: (data) =>
+      setAvailableDays(data.Hours.map((item) => item.date)),
+  });
 
-  //STATES
+  // States
   const [specialty, setSpecialty] = React.useState<Specialty | null>(null);
   const [professional, setProfessional] = React.useState<Doctor | null>(null);
-  const [availableDays, setAvailableDays] = React.useState<{
-    Hours: Hour[];
-  } | null>(null);
+
   const [daySelected, setDaySelected] = React.useState<Date | null>(null);
+  const [currentMonth, setCurrentMonth] = React.useState<number>(0);
+  const [currentYear, setCurrentYear] = React.useState<number>(0);
+  const [availableDays, setAvailableDays] = React.useState<string[] | null>(
+    null
+  );
 
   const specialtyId = specialty ? specialty._id : null;
   const professionalId = professional ? professional._id : null;
 
+  const getHourArg = {
+    variables: {
+      specialtyId,
+      professionalId,
+      dateBegin: new Date(currentYear, currentMonth, 1).toISOString(),
+      dateEnd: new Date(currentYear, currentMonth + 1, 0).toISOString(),
+    },
+  };
+
+  // Effects
+
+  // Get hours when change specialty
   React.useEffect(() => {
     professionalsRefetch({ specialtyId });
     setProfessional(null);
-    getHour({
-      variables: {
-        specialtyId,
-        professionalId,
-        dateBegin: new Date().toISOString(),
-        dateEnd: new Date(2020, 9, 0).toISOString(),
-      },
-    });
+    getHour(getHourArg);
   }, [specialty]);
 
-  // console.log(
-  //   hoursData.Hours.map(item => item.dates),
-  //   'hours'
-  // );
+  // Get hours when change month
+  React.useEffect(() => {
+    getHour(getHourArg);
+  }, [currentMonth]);
+
+  // Get hours when change professional
+  React.useEffect(() => {
+    getHour(getHourArg);
+  }, [professional]);
 
   const specialties = specialtiesData ? specialtiesData.Specialties : null;
   const professionals = professionalsData
@@ -87,7 +112,7 @@ export default function App() {
     return <h2>Uh oh! Something went wrong - please try again</h2>;
   }
 
-  const selectedDayRender = (
+  const showDateSelected = (
     <h3>
       {daySelected &&
         new Date(daySelected).toLocaleString('es-CL', {
@@ -97,10 +122,42 @@ export default function App() {
     </h3>
   );
 
+  let selectDay =
+    hoursData && daySelected
+      ? hoursData.Hours.map((date) => new Date(date.date).getTime()).indexOf(
+          new Date(daySelected).getTime()
+        )
+      : null;
+
+  const Doctors = (
+    <>
+      <header>{showDateSelected}</header>
+      <div>
+        <div>
+          <figure>
+            <img src="" />
+          </figure>
+        </div>
+        {hoursData && selectDay
+          ? hoursData.Hours[selectDay]?.professionals.map((professional) => (
+              <div>
+                <h6>{professional.professional.firstName}</h6>
+                <div>
+                  <span>{professional.specialty.name}</span>
+                </div>
+                {professional.hours.map((hour) => (
+                  <button>{hour}</button>
+                ))}
+              </div>
+            ))
+          : null}
+      </div>
+    </>
+  );
+
   return (
     <div className="App">
       <HeaderApp>
-        <input type="checkbox" />
         <BackButton />
         <TitleApp>Selecciona especialidad o médico</TitleApp>
         <TextField
@@ -127,30 +184,13 @@ export default function App() {
           <Calendar
             availableDays={availableDays}
             parentCallback={setDaySelected}
+            month={setCurrentMonth}
+            year={setCurrentYear}
           />
         </SectionCalendar>
         <SectionProfessional>
           <SubtitleApp>Selecciona tu médico y hora</SubtitleApp>
-          <ProfessionalsHours>
-            <header>{selectedDayRender}</header>
-            <div>
-              <div>
-                <figure>
-                  <img src="" />
-                </figure>
-              </div>
-              <div>
-                <h6>Nombre profesional</h6>
-                <div>
-                  <span>especialidad 1</span>
-                  <span>especialidad 2</span>
-                </div>
-              </div>
-            </div>
-            <div>
-              <button>13:15</button>
-            </div>
-          </ProfessionalsHours>
+          <ProfessionalsHours>{Doctors}</ProfessionalsHours>
         </SectionProfessional>
       </MainApp>
     </div>

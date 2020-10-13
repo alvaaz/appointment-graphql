@@ -2,7 +2,6 @@ import React from 'react';
 import { BrowserRouter as Router, Switch, Route, Link } from 'react-router-dom';
 import { Wrapper, Sidebar, Main } from './style';
 
-import { SpecialtiesView } from '../../views/specialties';
 import { DoctorsView } from '../../views/doctors';
 
 const routes = [
@@ -10,15 +9,7 @@ const routes = [
     path: '/doctors',
     exact: true,
     main: () => <DoctorsView />,
-  },
-  {
-    path: '/specialties',
-    main: () => <SpecialtiesView />,
-  },
-  {
-    path: '/offers',
-    main: () => <h2>Offers</h2>,
-  },
+  }
 ];
 
 export const Admin = () => {

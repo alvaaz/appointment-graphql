@@ -3,7 +3,7 @@ import { TH, TD, TR, TableWrapper, THead, TBody } from './style';
 import { Professionals, Specialties } from '../../interfaces/';
 
 type Props = {
-  dataSource?: Specialties | Professionals | null;
+  dataSource?: Professionals | null;
   columns: {
     title: string;
     render?: (value: any) => React.ReactNode;
